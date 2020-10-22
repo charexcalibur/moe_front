@@ -53,12 +53,13 @@ export type BasicLayoutContext = { [K in 'location']: BasicLayoutProps[K] } & {
 /**
  * use Authorized check all menu item
  */
-
 const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] =>
   menuList.map(item => {
+    console.log('menuListItem: ', item)
     const localItem = { ...item, children: item.children ? menuDataRender(item.children) : [] };
     return Authorized.check(item.authority, localItem, null) as MenuDataItem;
   });
+
 
 const defaultFooterDom = (
   <DefaultFooter
@@ -117,6 +118,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
     dispatch,
     children,
     settings,
+    menuData,
     location = {
       pathname: '/',
     },
@@ -125,10 +127,15 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
    * constructor
    */
 
+
+
   useEffect(() => {
     if (dispatch) {
       dispatch({
         type: 'user/fetchCurrent',
+      });
+      dispatch({
+        type: 'menu/getMenuData',
       });
     }
   }, []);
@@ -148,6 +155,19 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
   const authorized = getAuthorityFromRouter(props.route.routes, location.pathname || '/') || {
     authority: undefined,
   };
+
+  const serverMenuItem = ():MenuDataItem[]=>{
+    const transMenuItem :MenuDataItem[] = [];
+    if(Array.isArray(menuData)){
+      menuData.forEach((v) => {
+        const localV = { ...v, children: v.children ? menuDataRender(v.children) : [] };
+        const localMenuDataItem = Authorized.check(v.authority, localV, null) as MenuDataItem;
+        transMenuItem.push(localMenuDataItem);
+      });
+    }
+    return transMenuItem;
+  };
+
   return (
     <>
       <ProLayout
@@ -183,7 +203,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
           );
         }}
         footerRender={footerRender}
-        menuDataRender={menuDataRender}
+        menuDataRender={serverMenuItem}
         rightContentRender={() => <RightContent />}
         {...props}
         {...settings}
@@ -205,7 +225,8 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
   );
 };
 
-export default connect(({ global, settings }: ConnectState) => ({
+export default connect(({ global, settings, menu }: ConnectState) => ({
   collapsed: global.collapsed,
   settings,
+  menuData: menu.menuData
 }))(BasicLayout);
