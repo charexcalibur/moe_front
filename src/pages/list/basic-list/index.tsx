@@ -21,7 +21,6 @@ import OperationModal from './components/OperationModal';
 import { StateType } from './model';
 import { BasicListItemDataType } from './data.d';
 import styles from './style.less';
-import { number } from 'prop-types';
 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
@@ -68,7 +67,6 @@ const ListContent = ({
 
 export const BasicList: FC<BasicListProps> = props => {
   const addBtn = useRef(null);
-  console.log('BasicList: ', props)
   const {
     loading,
     dispatch,
@@ -78,6 +76,8 @@ export const BasicList: FC<BasicListProps> = props => {
   const [visible, setVisible] = useState<boolean>(false);
   const [current, setCurrent] = useState<Partial<BasicListItemDataType> | undefined>(undefined);
   const [page, setPage] = useState<number>(1);
+  const [searchWords, setSearchWords] = useState<string>('')
+  const [limit, setLimit] = useState<number>(10);
 
   useEffect(() => {
     dispatch({
@@ -90,25 +90,80 @@ export const BasicList: FC<BasicListProps> = props => {
     });
   }, [1]);
 
-  const handlePageChange = (_page: number) => {
+  const handleSearch = (_searchWords: string) => {
+    _searchWords = window.btoa(unescape(encodeURIComponent(_searchWords)))
     dispatch({
       type: 'listAndbasicList/fetch',
       payload: {
-        limit: 10,
-        page: _page,
+        search: _searchWords,
+        limit,
+        page: 1,
         ordering: '-add_time'
       },
+    });
+    setSearchWords(_searchWords)
+  }
+
+  const handlePageChange = (_page: number) => {
+    let payload = {}
+    if(searchWords) {
+      payload = {
+        limit,
+        page: _page,
+        ordering: '-add_time',
+        search: searchWords
+      }
+    } else {
+      payload = {
+        limit,
+        page: _page,
+        ordering: '-add_time'
+      }
+    }
+    dispatch({
+      type: 'listAndbasicList/fetch',
+      payload
     });
     setPage(_page)
   }
 
+  const handlePageSizeChange = (pageSize: number) => {
+    let payload = {}
+    if(searchWords) {
+      payload = {
+        limit: pageSize,
+        page,
+        ordering: '-add_time',
+        search: searchWords
+      }
+    } else {
+      payload = {
+        limit: pageSize,
+        page,
+        ordering: '-add_time'
+      }
+    }
+    dispatch({
+      type: 'listAndbasicList/fetch',
+      payload
+    });
+    setLimit(pageSize)
+  }
+
   const paginationProps = {
     onChange: (_page: number) => handlePageChange(_page),
+    onShowSizeChange: (_current: number, pageSize: number) =>  handlePageSizeChange(pageSize),
     showSizeChanger: true,
     showQuickJumper: true,
-    pageSize: 10,
+    pageSize: limit,
     current: page,
-    total
+    total,
+    pageSizeOptions: [
+      '5',
+      '10',
+      '20',
+      '50'
+    ]
   };
 
   const showModal = () => {
@@ -122,13 +177,12 @@ export const BasicList: FC<BasicListProps> = props => {
   };
 
   const deleteItem = (id: string) => {
-    console.log('delete item id: ', id)
     dispatch({
       type: 'listAndbasicList/delete',
       payload: {
         id,
         page,
-        limit: 10,
+        limit,
         ordering: '-add_time'
       },
     });
@@ -154,7 +208,7 @@ export const BasicList: FC<BasicListProps> = props => {
         <RadioButton value="progress">进行中</RadioButton>
         <RadioButton value="waiting">等待中</RadioButton>
       </RadioGroup>
-      <Search className={styles.extraContentSearch} placeholder="请输入" onSearch={() => ({})} />
+      <Search className={styles.extraContentSearch} placeholder="请输入" onSearch={handleSearch} />
     </div>
   );
 
@@ -187,7 +241,7 @@ export const BasicList: FC<BasicListProps> = props => {
     dispatch({
       type: 'listAndbasicList/fetch',
       payload: {
-        limit: 10,
+        limit,
         page,
         ordering: '-add_time'
       },
@@ -203,8 +257,6 @@ export const BasicList: FC<BasicListProps> = props => {
   };
 
   const handleSubmit = (values: BasicListItemDataType) => {
-    // const id = current ? current.id : '';
-    console.log('handleSubmit!')
     setAddBtnblur();
 
     setDone(true);

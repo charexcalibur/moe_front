@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2020-03-17 23:03:08
  * @LastEditors: hayato
- * @LastEditTime: 2020-10-20 17:44:32
+ * @LastEditTime: 2020-10-23 13:55:34
  */
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
@@ -30,6 +30,7 @@ export interface ModelType {
     submit: Effect;
     edit: Effect;
     delete: Effect;
+    search: Effect;
   };
   reducers: {
     queryList: Reducer<StateType>;
@@ -47,6 +48,13 @@ const Model: ModelType = {
 
   effects: {
     *fetch({ payload }, { call, put }) {
+      const response = yield call(queryQuotationsList, payload);
+      yield put({
+        type: 'queryList',
+        payload: Array.isArray(response.results) ? response : [],
+      });
+    },
+    *search({ payload }, { call, put }) {
       const response = yield call(queryQuotationsList, payload);
       yield put({
         type: 'queryList',

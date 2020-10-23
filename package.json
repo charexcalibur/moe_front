@@ -76,6 +76,7 @@
     "path-to-regexp": "2.4.0",
     "prop-types": "^15.5.10",
     "qs": "^6.9.0",
+    "rc-field-form": "^1.12.1",
     "react": "^16.8.6",
     "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.8.6",

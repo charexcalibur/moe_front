@@ -3,13 +3,15 @@
  * @Author: hayato
  * @Date: 2020-03-17 23:03:08
  * @LastEditors: hayato
- * @LastEditTime: 2020-10-20 15:54:27
+ * @LastEditTime: 2020-10-23 13:54:46
  */
 import request from '@/utils/request';
 import { BasicListItemDataType } from './data.d';
 
 interface ParamsType extends Partial<BasicListItemDataType> {
   limit?: number;
+  page?: number;
+  search?: number;
 }
 
 interface postQuotationType {
