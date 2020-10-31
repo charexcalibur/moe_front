@@ -3,20 +3,25 @@
  * @Author: hayato
  * @Date: 2020-10-21 16:51:13
  * @LastEditors: hayato
- * @LastEditTime: 2020-10-22 13:55:00
+ * @LastEditTime: 2020-10-31 15:45:28
  */
 import { query } from '@/services/menu';
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
 
-export interface MenuModelState {
-  menuData: any[];
+export interface StateType {
+  menuData: []
 }
 
 export type Effect = (
   action: AnyAction,
   effects: EffectsCommandMap & { select: <T>(func: (state: StateType) => T) => T },
 ) => void;
+
+export interface MenuModelState {
+  [x: string]: any;
+  
+}
 
 export interface MenuModelType {
   namespace: string;

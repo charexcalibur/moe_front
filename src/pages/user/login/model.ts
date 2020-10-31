@@ -3,13 +3,13 @@
  * @Author: hayato
  * @Date: 2020-03-17 23:02:18
  * @LastEditors: hayato
- * @LastEditTime: 2020-09-18 17:29:27
+ * @LastEditTime: 2020-10-30 21:26:56
  */
 import { AnyAction, Reducer } from 'redux';
 import { message } from 'antd';
 import { EffectsCommandMap } from 'dva';
 import { routerRedux } from 'dva/router';
-import { fakeAccountLogin, getFakeCaptcha } from './service';
+import { AccountLogin, getFakeCaptcha } from './service';
 import { getPageQuery, setAuthority, setToken } from './utils/utils';
 
 export interface StateType {
@@ -44,13 +44,14 @@ const Model: ModelType = {
 
   effects: {
     *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
+      const response = yield call(AccountLogin, payload);
       yield put({
         type: 'changeLoginStatus',
         payload: response,
       });
+      console.log('response: ', response)
       // Login successfully
-      if (response.status === 'ok') {
+      if (response.error_no === '1004') {
         message.success('登录成功！');
         yield setToken(response.token)
         const urlParams = new URL(window.location.href);
@@ -69,8 +70,7 @@ const Model: ModelType = {
           }
         }
         yield put(routerRedux.replace(redirect || '/'));
-      } else if(response.status === 'error') {
-        console.log('123123')
+      } else if(response.status === '1004') {
         message.success('账号密码错误！');
       } else {
         message.success(response.msg);
@@ -84,14 +84,8 @@ const Model: ModelType = {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority('admin');
-
-      if(payload.error_no === '1004') {
-        payload.status = 'ok'
-      } else {
-        payload.status = 'error'
-        console.log('error')
-      }
+      console.log('payload: ', payload)
+      setAuthority(payload.currentAuthority);
 
       return {
         ...state,

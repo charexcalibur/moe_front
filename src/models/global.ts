@@ -118,7 +118,7 @@ const GlobalModel: GlobalModelType = {
     },
     saveClearedNotices(state = { notices: [], collapsed: true }, { payload }): GlobalModelState {
       return {
-        collapsed: false,
+        // collapsed: false,
         ...state,
         notices: state.notices.filter((item): boolean => item.type !== payload),
       };

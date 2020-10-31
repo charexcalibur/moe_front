@@ -1,3 +1,10 @@
+/*
+ * @Description: Description
+ * @Author: hayato
+ * @Date: 2020-03-17 17:36:19
+ * @LastEditors: hayato
+ * @LastEditTime: 2020-10-31 15:25:45
+ */
 /**
  * Ant Design Pro v4 use `@ant-design/pro-layout` to handle Layout.
  * You can view component api by:
@@ -15,13 +22,18 @@ import React, { useEffect } from 'react';
 import { Link } from 'umi';
 import { Dispatch } from 'redux';
 import { connect } from 'dva';
-import { GithubOutlined } from '@ant-design/icons';
+import { GithubOutlined, DashboardFilled, UnorderedListOutlined} from '@ant-design/icons';
 import { Result, Button } from 'antd';
 import Authorized from '@/utils/Authorized';
 import RightContent from '@/components/GlobalHeader/RightContent';
 import { ConnectState } from '@/models/connect';
 import { isAntDesignPro, getAuthorityFromRouter } from '@/utils/utils';
 import logo from '../assets/logo.svg';
+
+const iconMaps = {
+  DashboardFilled,
+  UnorderedListOutlined
+}
 
 const noMatch = (
   <Result
@@ -53,12 +65,16 @@ export type BasicLayoutContext = { [K in 'location']: BasicLayoutProps[K] } & {
 /**
  * use Authorized check all menu item
  */
-const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] =>
-  menuList.map(item => {
-    console.log('menuListItem: ', item)
+const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] => {
+  console.log('menuList: ', menuList)
+  return menuList.map(item => {
     const localItem = { ...item, children: item.children ? menuDataRender(item.children) : [] };
+    console.log('localItem: ', localItem)
+    console.log('Authorized checked: ', Authorized.check(item.authority, localItem, null))
     return Authorized.check(item.authority, localItem, null) as MenuDataItem;
   });
+}
+
 
 
 const defaultFooterDom = (

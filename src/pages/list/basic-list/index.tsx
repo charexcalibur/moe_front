@@ -217,7 +217,7 @@ export const BasicList: FC<BasicListProps> = props => {
   }> = ({ item }) => (
     <Dropdown
       overlay={
-        <Menu onClick={({ key }) => editAndDelete(key, item)}>
+        <Menu onClick={({ key }) => editAndDelete(key+'', item)}>
           <Menu.Item key="edit">编辑</Menu.Item>
           <Menu.Item key="delete">删除</Menu.Item>
         </Menu>

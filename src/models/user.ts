@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2020-03-17 17:36:19
  * @LastEditors: hayato
- * @LastEditTime: 2020-09-18 17:03:30
+ * @LastEditTime: 2020-10-30 20:54:54
  */
 import { Effect } from 'dva';
 import { Reducer } from 'redux';
@@ -70,10 +70,8 @@ const UserModel: UserModelType = {
   reducers: {
     saveCurrentUser(state, action) {
       const userPayload = {
-        name: action.payload.result.username
+        name: action.payload.result.current_user
       }
-
-      console.log('userPayload: ', userPayload)
 
       return {
         ...state,
