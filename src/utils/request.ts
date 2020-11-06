@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2020-03-17 17:36:19
  * @LastEditors: hayato
- * @LastEditTime: 2020-10-21 16:12:52
+ * @LastEditTime: 2020-11-06 11:25:48
  */
 /**
  * request 网络请求工具
@@ -13,6 +13,8 @@ import { extend } from 'umi-request';
 import { notification } from 'antd';
 import { string } from 'prop-types';
 import prefixUrl from './../../prefix'
+import { router } from 'umi';
+import { stringify } from 'querystring';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -45,6 +47,11 @@ const errorHandler = (error: { response: Response }): Response => {
       message: `请求错误 ${status}: ${url}`,
       description: errorText,
     });
+    if(status === 401) {
+      router.replace({
+        pathname: '/user/login'
+      });
+    }
   } else if (!response) {
     notification.error({
       description: '您的网络发生异常，无法连接服务器',
