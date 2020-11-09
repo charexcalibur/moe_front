@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2020-03-17 23:03:08
  * @LastEditors: hayato
- * @LastEditTime: 2020-10-23 13:55:34
+ * @LastEditTime: 2020-11-09 20:10:24
  */
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
@@ -69,6 +69,7 @@ const Model: ModelType = {
       });
     },
     *submit({ payload }, { call }) {
+      console.log('submit: ', payload)
       yield call(postQuotation, payload);
     },
     *edit({ payload }, { call }) {

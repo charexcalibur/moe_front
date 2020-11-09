@@ -192,8 +192,8 @@ export const BasicList: FC<BasicListProps> = props => {
     if (key === 'edit') showEditModal(currentItem);
     else if (key === 'delete') {
       Modal.confirm({
-        title: '删除任务',
-        content: '确定删除该任务吗？',
+        title: '删除条目',
+        content: '确定删除该条目吗？',
         okText: '确认',
         cancelText: '取消',
         onOk: () => deleteItem(currentItem.id),
@@ -257,13 +257,22 @@ export const BasicList: FC<BasicListProps> = props => {
   };
 
   const handleSubmit = (values: BasicListItemDataType) => {
-    setAddBtnblur();
 
+    if (current?.id) {
+      values.id = current.id
+      dispatch({
+        type: 'listAndbasicList/edit',
+        payload: {...values},
+      });
+    } else {
+      dispatch({
+        type: 'listAndbasicList/submit',
+        payload: {...values},
+      });
+    }
+    setAddBtnblur();
     setDone(true);
-    dispatch({
-      type: 'listAndbasicList/submit',
-      payload: {...values },
-    });
+    setCurrent(undefined)
   };
 
   return (

@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2020-03-17 23:03:08
  * @LastEditors: hayato
- * @LastEditTime: 2020-10-23 13:54:46
+ * @LastEditTime: 2020-11-09 20:19:45
  */
 import request from '@/utils/request';
 import { BasicListItemDataType } from './data.d';
@@ -43,7 +43,7 @@ export async function postQuotation(params: postQuotationType) {
 }
 
 export async function putQuotation(params: putQuotationType) {
-  return request('/fhc/quotations/', {
+  return request(`/fhc/quotations/${params.id}/`, {
     method: 'PUT',
     data: {...params}
   });
