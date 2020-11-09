@@ -121,13 +121,13 @@ export default {
           path: '/',
           component: '../layouts/BasicLayout',
           Routes: ['src/pages/Authorized'],
-          authority: ['admin'],
+          authority: ['admin','fhc_guest'],
           routes: [
             {
               path: '/dashboard',
               name: 'dashboard',
               icon: 'dashboard',
-              authority: ['admin'],
+              authority: ['admin','fhc_guest'],
               routes: [
                 {
                   name: 'analysis',
@@ -219,6 +219,7 @@ export default {
                   icon: 'smile',
                   path: '/list/basic-list',
                   component: './list/basic-list',
+                  authority: ['admin','fhc_guest'],
                 },
                 {
                   name: 'card-list',
@@ -338,7 +339,7 @@ export default {
             {
               path: '/',
               redirect: '/dashboard/analysis',
-              authority: ['admin', 'user'],
+              authority: ['admin', 'user', 'fhc_guest'],
             },
             {
               component: '404',

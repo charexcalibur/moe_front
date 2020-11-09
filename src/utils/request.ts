@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2020-03-17 17:36:19
  * @LastEditors: hayato
- * @LastEditTime: 2020-11-06 11:25:48
+ * @LastEditTime: 2020-11-06 13:07:22
  */
 /**
  * request 网络请求工具
@@ -64,7 +64,6 @@ const errorHandler = (error: { response: Response }): Response => {
 
 const getToken = () => {
   const token = `Token ${window.sessionStorage.getItem('token')}`
-  console.log('getToken: ', token)
   return token.toString()
 }
 
