@@ -1,27 +1,39 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { Button, Card, DatePicker, Input, Form, InputNumber, Radio, Select, Tooltip } from 'antd';
+import { Upload, Button, Card, DatePicker, Input, Form, InputNumber, Radio, Select, Tooltip } from 'antd';
 import { FormattedMessage, formatMessage } from 'umi-plugin-react/locale';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { Store, ValidateErrorEntity } from 'rc-field-form/es/interface';
 import { Dispatch } from 'redux';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { connect } from 'dva';
+import { StateType } from './model';
 import styles from './style.less';
 
 const FormItem = Form.Item;
-const { Option } = Select;
-const { RangePicker } = DatePicker;
-const { TextArea } = Input;
 
 interface BasicFormProps {
   submitting: boolean;
+  formAndbasicForm: StateType;
   dispatch: Dispatch<any>;
 }
 
 const BasicForm: FC<BasicFormProps> = props => {
-  const { submitting } = props;
+  const {
+    submitting,
+    dispatch,
+    formAndbasicForm: { qiniuToken }
+  } = props;
   const [form] = Form.useForm();
   const [showPublicUsers, setShowPublicUsers] = React.useState(false);
+
+  useEffect(() => {
+    dispatch({
+      type: 'formAndbasicForm/getQiniuToken'
+    })
+  }, [])
+
+  console.log('qiniuToken: ', qiniuToken)
+
   const formItemLayout = {
     labelCol: {
       xs: { span: 24 },
@@ -74,7 +86,6 @@ const BasicForm: FC<BasicFormProps> = props => {
           <FormItem
             {...formItemLayout}
             label={<FormattedMessage id="formandbasic-form.title.label" />}
-            name="title"
             rules={[
               {
                 required: true,
@@ -82,150 +93,7 @@ const BasicForm: FC<BasicFormProps> = props => {
               },
             ]}
           >
-            <Input placeholder={formatMessage({ id: 'formandbasic-form.title.placeholder' })} />
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-            label={<FormattedMessage id="formandbasic-form.date.label" />}
-            name="date"
-            rules={[
-              {
-                required: true,
-                message: formatMessage({ id: 'formandbasic-form.date.required' }),
-              },
-            ]}
-          >
-            <RangePicker
-              style={{ width: '100%' }}
-              placeholder={[
-                formatMessage({ id: 'formandbasic-form.placeholder.start' }),
-                formatMessage({ id: 'formandbasic-form.placeholder.end' }),
-              ]}
-            />
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-            label={<FormattedMessage id="formandbasic-form.goal.label" />}
-            name="goal"
-            rules={[
-              {
-                required: true,
-                message: formatMessage({ id: 'formandbasic-form.goal.required' }),
-              },
-            ]}
-          >
-            <TextArea
-              style={{ minHeight: 32 }}
-              placeholder={formatMessage({ id: 'formandbasic-form.goal.placeholder' })}
-              rows={4}
-            />
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-            label={<FormattedMessage id="formandbasic-form.standard.label" />}
-            name="standard"
-            rules={[
-              {
-                required: true,
-                message: formatMessage({ id: 'formandbasic-form.standard.required' }),
-              },
-            ]}
-          >
-            <TextArea
-              style={{ minHeight: 32 }}
-              placeholder={formatMessage({ id: 'formandbasic-form.standard.placeholder' })}
-              rows={4}
-            />
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-            label={
-              <span>
-                <FormattedMessage id="formandbasic-form.client.label" />
-                <em className={styles.optional}>
-                  <FormattedMessage id="formandbasic-form.form.optional" />
-                  <Tooltip title={<FormattedMessage id="formandbasic-form.label.tooltip" />}>
-                    <InfoCircleOutlined style={{ marginRight: 4 }} />
-                  </Tooltip>
-                </em>
-              </span>
-            }
-            name="client"
-          >
-            <Input placeholder={formatMessage({ id: 'formandbasic-form.client.placeholder' })} />
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-            label={
-              <span>
-                <FormattedMessage id="formandbasic-form.invites.label" />
-                <em className={styles.optional}>
-                  <FormattedMessage id="formandbasic-form.form.optional" />
-                </em>
-              </span>
-            }
-            name="invites"
-          >
-            <Input placeholder={formatMessage({ id: 'formandbasic-form.invites.placeholder' })} />
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-            label={
-              <span>
-                <FormattedMessage id="formandbasic-form.weight.label" />
-                <em className={styles.optional}>
-                  <FormattedMessage id="formandbasic-form.form.optional" />
-                </em>
-              </span>
-            }
-            name="weight"
-          >
-            <InputNumber
-              placeholder={formatMessage({ id: 'formandbasic-form.weight.placeholder' })}
-              min={0}
-              max={100}
-            />
-            <span className="ant-form-text">%</span>
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-            label={<FormattedMessage id="formandbasic-form.public.label" />}
-            help={<FormattedMessage id="formandbasic-form.label.help" />}
-            name="publicType"
-          >
-            <div>
-              <Radio.Group>
-                <Radio value="1">
-                  <FormattedMessage id="formandbasic-form.radio.public" />
-                </Radio>
-                <Radio value="2">
-                  <FormattedMessage id="formandbasic-form.radio.partially-public" />
-                </Radio>
-                <Radio value="3">
-                  <FormattedMessage id="formandbasic-form.radio.private" />
-                </Radio>
-              </Radio.Group>
-              <FormItem style={{ marginBottom: 0 }} name="publicUsers">
-                <Select
-                  mode="multiple"
-                  placeholder={formatMessage({ id: 'formandbasic-form.publicUsers.placeholder' })}
-                  style={{
-                    margin: '8px 0',
-                    display: showPublicUsers ? 'block' : 'none',
-                  }}
-                >
-                  <Option value="1">
-                    <FormattedMessage id="formandbasic-form.option.A" />
-                  </Option>
-                  <Option value="2">
-                    <FormattedMessage id="formandbasic-form.option.B" />
-                  </Option>
-                  <Option value="3">
-                    <FormattedMessage id="formandbasic-form.option.C" />
-                  </Option>
-                </Select>
-              </FormItem>
-            </div>
+            <Input placeholder={qiniuToken} />
           </FormItem>
           <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
             <Button type="primary" htmlType="submit" loading={submitting}>
@@ -241,6 +109,15 @@ const BasicForm: FC<BasicFormProps> = props => {
   );
 };
 
-export default connect(({ loading }: { loading: { effects: { [key: string]: boolean } } }) => ({
-  submitting: loading.effects['formAndbasicForm/submitRegularForm'],
+export default connect(({
+   loading,
+   formAndbasicForm
+  }: {
+    loading: {
+      effects: { [key: string]: boolean }
+    };
+    formAndbasicForm: StateType;
+  }) => ({
+    formAndbasicForm,
+    submitting: loading.effects['formAndbasicForm/submitRegularForm'],
 }))(BasicForm);

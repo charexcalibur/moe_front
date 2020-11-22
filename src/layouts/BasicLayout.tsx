@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2020-03-17 17:36:19
  * @LastEditors: hayato
- * @LastEditTime: 2020-11-06 16:58:16
+ * @LastEditTime: 2020-11-16 20:50:22
  */
 /**
  * Ant Design Pro v4 use `@ant-design/pro-layout` to handle Layout.
@@ -66,11 +66,11 @@ export type BasicLayoutContext = { [K in 'location']: BasicLayoutProps[K] } & {
  * use Authorized check all menu item
  */
 const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] => {
-  console.log('menuList: ', menuList)
+  // console.log('menuList: ', menuList)
   return menuList.map(item => {
     const localItem = { ...item, children: item.children ? menuDataRender(item.children) : [] };
-    console.log('localItem: ', localItem)
-    console.log('Authorized checked: ', Authorized.check(item.authority, localItem, null))
+    // console.log('localItem: ', localItem)
+    // console.log('Authorized checked: ', Authorized.check(item.authority, localItem, null))
     return Authorized.check(item.authority, localItem, null) as MenuDataItem;
   });
 }
