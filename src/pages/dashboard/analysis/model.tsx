@@ -2,7 +2,8 @@ import { AnyAction, Reducer } from 'redux';
 
 import { EffectsCommandMap } from 'dva';
 import { AnalysisData } from './data.d';
-import { fakeChartData, getBlogAnalysis } from './service';
+import { fakeChartData, getBlogAnalysis, getQuotationsStatistic } from './service';
+import { AlignLeftOutlined } from '@ant-design/icons';
 
 export type Effect = (
   action: AnyAction,
@@ -16,6 +17,7 @@ export interface ModelType {
     fetch: Effect;
     fetchSalesData: Effect;
     fetchBlogData: Effect;
+    fetchQuotationsStatistic: Effect;
   };
   reducers: {
     save: Reducer<AnalysisData>;
@@ -35,7 +37,8 @@ const initState = {
   salesTypeDataOffline: [],
   radarData: [],
   blogData: {
-    totalBlogCount: 0
+    totalBlogCount: 0,
+    quoData: 0
   }
 };
 
@@ -45,13 +48,21 @@ const Model: ModelType = {
   state: initState,
 
   effects: {
-    *fetch(_, { call, put }) {
-      const response = yield call(fakeChartData);
+    *fetch(_, { call, put, all }) {
+      const [response, quo_res] = yield all([
+        call(fakeChartData),
+        call(getQuotationsStatistic)
+      ])
+
+      console.log('response', response)
+      console.log('quo_res', quo_res)
+
       yield put({
         type: 'save',
         payload: {
           blogData: {
-            totalBlogCount: response.result.total_blog_count
+            totalBlogCount: response.result.total_blog_count,
+            quoData: quo_res.total_quotations
           }
         },
       });
@@ -72,6 +83,17 @@ const Model: ModelType = {
         payload: {
           blogData: {
             totalBlogCount: response.result.total_blog_count
+          }
+        },
+      })
+    },
+    *fetchQuotationsStatistic(_, {call, put}) {
+      const response = yield call(getQuotationsStatistic);
+      yield put({
+        type: 'save',
+        payload: {
+          blogData: {
+            quoData: response.total_quotations
           }
         },
       })

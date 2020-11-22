@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2020-03-17 23:02:34
  * @LastEditors: hayato
- * @LastEditTime: 2020-09-22 16:48:40
+ * @LastEditTime: 2020-11-22 21:10:42
  */
 export interface VisitDataType {
   x: string;
@@ -37,6 +37,7 @@ export interface RadarData {
 
 export interface BlogData {
   totalBlogCount: number;
+  quoData: number;
 }
 
 export interface AnalysisData {

@@ -7,3 +7,7 @@ export async function fakeChartData() {
 export async function getBlogAnalysis() {
   return request('/api/getBlogAnalysis');
 }
+
+export async function getQuotationsStatistic() {
+  return request('/fhc/quotationsStatistic');
+}

@@ -48,9 +48,7 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Blo
       <ChartCard
         bordered={false}
         loading={loading}
-        title={
-          <FormattedMessage id="dashboardandanalysis.analysis.visits" defaultMessage="Visits" />
-        }
+        title='语录总数'
         action={
           <Tooltip
             title={
@@ -63,7 +61,7 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Blo
             <InfoCircleOutlined />
           </Tooltip>
         }
-        total={numeral(8846).format('0,0')}
+        total={visitData.quoData}
         footer={
           <Field
             label={
@@ -113,7 +111,7 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Blo
         }
         contentHeight={46}
       >
-        <MiniBar data={visitData} />
+        {/* <MiniBar data={visitData} /> */}
       </ChartCard>
     </Col>
     <Col {...topColResponsiveProps}>
