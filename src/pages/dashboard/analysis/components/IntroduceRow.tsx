@@ -2,7 +2,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { Col, Row, Tooltip } from 'antd';
 import { FormattedMessage } from 'umi-plugin-react/locale';
 import React from 'react';
-import numeral from 'numeral';
+// import numeral from 'numeral';
 import { ChartCard, MiniArea, MiniBar, MiniProgress, Field } from './Charts';
 import { BlogData } from '../data.d';
 import Trend from './Trend';
@@ -18,7 +18,7 @@ const topColResponsiveProps = {
 };
 
 const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: BlogData; }) => (
-  <Row gutter={24} type="flex">
+  <Row gutter={24}>
     <Col {...topColResponsiveProps}>
       <ChartCard
         bordered={false}
@@ -62,17 +62,17 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Blo
           </Tooltip>
         }
         total={visitData.quoData}
-        footer={
-          <Field
-            label={
-              <FormattedMessage
-                id="dashboardandanalysis.analysis.day-visits"
-                defaultMessage="Daily Visits"
-              />
-            }
-            value={numeral(1234).format('0,0')}
-          />
-        }
+        // footer={
+        //   <Field
+        //     label={
+        //       <FormattedMessage
+        //         id="dashboardandanalysis.analysis.day-visits"
+        //         defaultMessage="Daily Visits"
+        //       />
+        //     }
+        //     value={numeral(1234).format('0,0')}
+        //   />
+        // }
         contentHeight={46}
       >
         <MiniArea color="#975FE4" data={[]} />
@@ -97,7 +97,7 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Blo
             <InfoCircleOutlined />
           </Tooltip>
         }
-        total={numeral(6560).format('0,0')}
+        // total={numeral(6560).format('0,0')}
         footer={
           <Field
             label={

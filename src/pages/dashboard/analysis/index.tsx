@@ -9,8 +9,7 @@ import PageLoading from './components/PageLoading';
 import { AnalysisData } from './data.d';
 import styles from './style.less';
 
-const IntroduceRow = React.lazy(() => import('./components/IntroduceRow'));
-
+import IntroduceRow from './components/IntroduceRow'
 interface AnalysisProps {
   dashboardAndanalysis: AnalysisData;
   dispatch: Dispatch<any>;
@@ -37,9 +36,9 @@ export const  Analysis: FC<AnalysisProps> = props => {
     <div>
       <GridContent>
         <React.Fragment>
-          <Suspense fallback={<PageLoading />}>
+          {/* <Suspense fallback={<PageLoading />}> */}
             <IntroduceRow loading={loading} visitData={blogData} />
-          </Suspense>
+          {/* </Suspense> */}
         </React.Fragment>
       </GridContent>
     </div>
