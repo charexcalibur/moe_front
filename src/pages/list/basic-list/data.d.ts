@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2020-03-17 23:03:08
  * @LastEditors: hayato
- * @LastEditTime: 2020-10-20 15:00:52
+ * @LastEditTime: 2020-11-28 01:19:03
  */
 export interface Member {
   avatar: string;
@@ -37,4 +37,5 @@ export interface BasicListItemDataType {
   author: string;
   add_time: string;
   modify_time: string;
+  image_url: string;
 }

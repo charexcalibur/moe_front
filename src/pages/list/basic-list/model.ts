@@ -3,17 +3,18 @@
  * @Author: hayato
  * @Date: 2020-03-17 23:03:08
  * @LastEditors: hayato
- * @LastEditTime: 2020-11-09 20:10:24
+ * @LastEditTime: 2020-11-30 16:54:20
  */
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
-import { queryQuotationsList, postQuotation, putQuotation, deleteQuotation } from './service';
+import { queryQuotationsList, postQuotation, putQuotation, deleteQuotation, getQiniuToken} from './service';
 
 import { BasicListItemDataType } from './data.d';
 
 export interface StateType {
-  list: BasicListItemDataType[];
-  total: number;
+  list?: BasicListItemDataType[];
+  total?: number;
+  qiniuToken?: string;
 }
 
 export type Effect = (
@@ -31,10 +32,12 @@ export interface ModelType {
     edit: Effect;
     delete: Effect;
     search: Effect;
+    getQiniuToken: Effect;
   };
   reducers: {
     queryList: Reducer<StateType>;
     appendList: Reducer<StateType>;
+    setToken: Reducer<StateType>;
   };
 }
 
@@ -43,7 +46,8 @@ const Model: ModelType = {
 
   state: {
     list: [],
-    total: 0
+    total: 0,
+    qiniuToken: ''
   },
 
   effects: {
@@ -81,6 +85,13 @@ const Model: ModelType = {
       yield put({type: 'fetch', payload})
 
     },
+    *getQiniuToken({ payload }, { call, put }) {
+      const response = yield call(getQiniuToken, payload);
+      yield put({
+        type: 'setToken',
+        payload: response.token ? response : ''
+      })
+    }
   },
 
   reducers: {
@@ -94,8 +105,13 @@ const Model: ModelType = {
     appendList(state = { list: [], total: 0 }, action) {
       return {
         ...state,
-        list: state.list.concat(action.payload),
+        list: state?.list?.concat(action.payload),
       };
+    },
+    setToken(state = {qiniuToken: ''}, action) {
+      return {
+        qiniuToken: action.payload.token
+      }
     }
   },
 };

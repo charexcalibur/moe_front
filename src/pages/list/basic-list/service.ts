@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2020-03-17 23:03:08
  * @LastEditors: hayato
- * @LastEditTime: 2020-11-09 20:19:45
+ * @LastEditTime: 2020-11-30 16:28:40
  */
 import request from '@/utils/request';
 import { BasicListItemDataType } from './data.d';
@@ -94,5 +94,11 @@ export async function updateFakeList(params: ParamsType) {
       ...restParams,
       method: 'update',
     },
+  });
+}
+
+export async function getQiniuToken() {
+  return request('/api/getQiniuToken', {
+    method: 'GET',
   });
 }

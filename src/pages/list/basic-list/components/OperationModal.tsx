@@ -4,6 +4,9 @@ import { Store } from 'rc-field-form/lib/interface';
 import { Modal, Result, Button, Form, Input } from 'antd';
 import { BasicListItemDataType } from '../data.d';
 import styles from '../style.less';
+import { Dispatch } from 'redux';
+import { connect } from 'dva';
+import { StateType } from '../model';
 
 interface OperationModalProps {
   done: boolean;
@@ -12,6 +15,8 @@ interface OperationModalProps {
   onDone: () => void;
   onSubmit: (values: BasicListItemDataType) => void;
   onCancel: () => void;
+  dispatch: Dispatch<any>;
+  listAndbasicList: StateType;
 }
 
 const { TextArea } = Input;
@@ -22,8 +27,17 @@ const formLayout = {
 
 const OperationModal: FC<OperationModalProps> = props => {
   const [form] = Form.useForm();
-  const { done, visible, current, onDone, onCancel, onSubmit } = props;
-
+  const {
+    done,
+    visible,
+    current,
+    listAndbasicList: {qiniuToken},
+    onDone,
+    onCancel,
+    onSubmit,
+    dispatch
+  } = props;
+  console.log('visible: ', visible)
   useEffect(() => {
     if (form && !visible) {
       form.resetFields();
@@ -38,6 +52,16 @@ const OperationModal: FC<OperationModalProps> = props => {
       });
     }
   }, [props.current]);
+
+  useEffect(() => {
+    if (visible) {
+      dispatch({
+        type: 'listAndbasicList/getQiniuToken'
+      })
+    }
+  }, [props.visible])
+
+  console.log('qiniuToken: ', qiniuToken)
 
   const handleSubmit = () => {
     if (!form) return;
@@ -85,6 +109,12 @@ const OperationModal: FC<OperationModalProps> = props => {
         >
           <TextArea rows={4} placeholder="请输入至少一个字符" />
         </Form.Item>
+        <Form.Item
+          name="image_url"
+          label="图片链接"
+        >
+          <Input placeholder="输入图片链接" />
+        </Form.Item>
       </Form>
     );
   };
@@ -104,4 +134,13 @@ const OperationModal: FC<OperationModalProps> = props => {
   );
 };
 
-export default OperationModal;
+export default connect(
+  ({
+    listAndbasicList
+  }: {
+    listAndbasicList: StateType;
+
+  }) => ({
+    listAndbasicList
+  }),
+)(OperationModal);

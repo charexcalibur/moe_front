@@ -253,6 +253,14 @@ export const BasicList: FC<BasicListProps> = props => {
   };
 
   const handleCancel = () => {
+    dispatch({
+      type: 'listAndbasicList/fetch',
+      payload: {
+        limit,
+        page,
+        ordering: '-add_time'
+      },
+    });
     setAddBtnblur();
     setVisible(false);
   };
