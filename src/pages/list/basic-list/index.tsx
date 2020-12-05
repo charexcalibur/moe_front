@@ -78,7 +78,6 @@ export const BasicList: FC<BasicListProps> = props => {
   const [page, setPage] = useState<number>(1);
   const [searchWords, setSearchWords] = useState<string>('')
   const [limit, setLimit] = useState<number>(10);
-  console.log('listAndbasicList props: ', list)
 
   useEffect(() => {
     dispatch({

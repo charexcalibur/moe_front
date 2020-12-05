@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2020-03-17 23:03:08
  * @LastEditors: hayato
- * @LastEditTime: 2020-11-30 16:54:20
+ * @LastEditTime: 2020-12-05 15:47:08
  */
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
@@ -15,6 +15,7 @@ export interface StateType {
   list?: BasicListItemDataType[];
   total?: number;
   qiniuToken?: string;
+  key?: string;
 }
 
 export type Effect = (
@@ -47,7 +48,8 @@ const Model: ModelType = {
   state: {
     list: [],
     total: 0,
-    qiniuToken: ''
+    qiniuToken: '',
+    key: ''
   },
 
   effects: {
@@ -108,9 +110,10 @@ const Model: ModelType = {
         list: state?.list?.concat(action.payload),
       };
     },
-    setToken(state = {qiniuToken: ''}, action) {
+    setToken(state = {qiniuToken: '', key: ''}, action) {
       return {
-        qiniuToken: action.payload.token
+        qiniuToken: action.payload.token,
+        key: action.payload.key
       }
     }
   },

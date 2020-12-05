@@ -1,12 +1,15 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import moment from 'moment';
 import { Store } from 'rc-field-form/lib/interface';
-import { Modal, Result, Button, Form, Input } from 'antd';
+import { Modal, Result, Button, Form, Input, Upload, message } from 'antd';
 import { BasicListItemDataType } from '../data.d';
 import styles from '../style.less';
 import { Dispatch } from 'redux';
 import { connect } from 'dva';
 import { StateType } from '../model';
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { any } from 'prop-types';
+import * as qiniu from 'qiniu-js'
 
 interface OperationModalProps {
   done: boolean;
@@ -25,19 +28,28 @@ const formLayout = {
   wrapperCol: { span: 13 },
 };
 
+const QINIU_SERVER = 'http://upload.qiniup.com'
+const CDN_URL = 'https://cdn.axis-studio.org/'
+
 const OperationModal: FC<OperationModalProps> = props => {
+  console.log('props: ', props)
   const [form] = Form.useForm();
   const {
     done,
     visible,
     current,
-    listAndbasicList: {qiniuToken},
+    listAndbasicList: {qiniuToken, key},
     onDone,
     onCancel,
     onSubmit,
     dispatch
   } = props;
-  console.log('visible: ', visible)
+
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [imageUrl, setImageUrl] = useState<string>('');
+  const [fileList, setFileList] = useState<any[]>([]);
+
   useEffect(() => {
     if (form && !visible) {
       form.resetFields();
@@ -61,7 +73,6 @@ const OperationModal: FC<OperationModalProps> = props => {
     }
   }, [props.visible])
 
-  console.log('qiniuToken: ', qiniuToken)
 
   const handleSubmit = () => {
     if (!form) return;
@@ -78,6 +89,18 @@ const OperationModal: FC<OperationModalProps> = props => {
     ? { footer: null, onCancel: onDone }
     : { okText: '保存', onOk: handleSubmit, onCancel };
 
+  const beforeUpload = (file: any) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('Image must smaller than 2MB!');
+    }
+    return isJpgOrPng && isLt2M;
+  }
+
   const getModalContent = () => {
     if (done) {
       return (
@@ -93,29 +116,84 @@ const OperationModal: FC<OperationModalProps> = props => {
         />
       );
     }
+
+    const uploadButton = (
+      <div>
+        <div style={{ marginTop: 8 }}>Upload</div>
+      </div>
+    );
+
+    const handleChange = ({ file, fileList }: {
+      file: any,
+      fileList: any
+    }) => {
+      if (file.status === 'uploading') {
+        setLoading(true)
+        return;
+      }
+
+      if (file.status === 'done') {
+        const { uid, name, type, thumbUrl, status, response = {} } = file;
+        const fileItem = {
+          uid,
+          name,
+          type,
+          thumbUrl,
+          status,
+          url: (CDN_URL + response.key || "")
+        };
+        console.log('fileItem: ', fileItem)
+        fileList.pop();
+        fileList.push(fileItem);
+        setFileList([...fileList]);
+        setLoading(false)
+        setImageUrl(fileItem.url)
+      }
+    }
+
+    const upLoad = (
+      <Upload
+        name="file"
+        listType="picture-card"
+        className="quo-image-uploader"
+        beforeUpload={beforeUpload}
+        showUploadList={false}
+        action={QINIU_SERVER}
+        data={{ token: qiniuToken, key }}
+        fileList={fileList}
+        onChange={handleChange}
+      >
+        {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+      </Upload>
+    )
+
     return (
-      <Form {...formLayout} form={form} onFinish={handleFinish}>
-        <Form.Item
-          name="author"
-          label="作者"
-          rules={[{ required: true, message: '请输入作者名称' }]}
-        >
-          <Input placeholder="请输入" />
-        </Form.Item>
-        <Form.Item
-          name="content"
-          label="内容"
-          rules={[{ message: '请输入至少一个字符的产品描述！', min: 1 }]}
-        >
-          <TextArea rows={4} placeholder="请输入至少一个字符" />
-        </Form.Item>
-        <Form.Item
-          name="image_url"
-          label="图片链接"
-        >
-          <Input placeholder="输入图片链接" />
-        </Form.Item>
-      </Form>
+      <div>
+        {upLoad}
+        <Form {...formLayout} form={form} onFinish={handleFinish}>
+          <Form.Item
+            name="author"
+            label="作者"
+            rules={[{ required: true, message: '请输入作者名称' }]}
+          >
+            <Input placeholder="请输入" />
+          </Form.Item>
+          <Form.Item
+            name="content"
+            label="内容"
+            rules={[{ message: '请输入至少一个字符的产品描述！', min: 1 }]}
+          >
+            <TextArea rows={4} placeholder="请输入至少一个字符" />
+          </Form.Item>
+          <Form.Item
+            name="image_url"
+            label="图片链接"
+          >
+            <Input placeholder="输入图片链接" />
+          </Form.Item>
+        </Form>
+      </div>
+
     );
   };
 
