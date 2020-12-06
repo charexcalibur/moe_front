@@ -24,8 +24,8 @@ interface OperationModalProps {
 
 const { TextArea } = Input;
 const formLayout = {
-  labelCol: { span: 7 },
-  wrapperCol: { span: 13 },
+  labelCol: { span: 6 },
+  wrapperCol: { span: 15 },
 };
 
 const QINIU_SERVER = 'http://upload.qiniup.com'
@@ -122,7 +122,8 @@ const OperationModal: FC<OperationModalProps> = props => {
 
     const uploadButton = (
       <div>
-        <div style={{ marginTop: 8 }}>上传图片</div>
+        {loading ? <LoadingOutlined /> : <PlusOutlined />}
+        <div style={{ marginTop: 8 }}>Upload</div>
       </div>
     );
 
@@ -162,7 +163,7 @@ const OperationModal: FC<OperationModalProps> = props => {
       <Upload
         name="file"
         listType="picture-card"
-        className="quo-image-uploader"
+        className={styles.quoImageUploader}
         beforeUpload={beforeUpload}
         showUploadList={false}
         action={QINIU_SERVER}
@@ -175,9 +176,11 @@ const OperationModal: FC<OperationModalProps> = props => {
     )
 
     return (
-      <div>
-        {upLoad}
-        <Form {...formLayout} form={form} onFinish={handleFinish}>
+      <div className={styles.listModelContainer}>
+        <div className={styles.uploadContainer}>
+          {upLoad}
+        </div>
+        <Form className={styles.listModalFormContainer} {...formLayout} form={form} onFinish={handleFinish}>
           <Form.Item
             name="author"
             label="作者"
