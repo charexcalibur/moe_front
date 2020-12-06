@@ -57,6 +57,7 @@ const OperationModal: FC<OperationModalProps> = props => {
   }, [props.visible]);
 
   useEffect(() => {
+    console.log('current: ', current)
     if (current) {
       form.setFieldsValue({
         ...current,
@@ -77,11 +78,13 @@ const OperationModal: FC<OperationModalProps> = props => {
   const handleSubmit = () => {
     if (!form) return;
     form.submit();
+    setImageUrl('')
   };
 
   const handleFinish = (values: Store) => {
     if (onSubmit) {
       onSubmit(values as BasicListItemDataType);
+      setImageUrl('')
     }
   };
 
@@ -119,7 +122,7 @@ const OperationModal: FC<OperationModalProps> = props => {
 
     const uploadButton = (
       <div>
-        <div style={{ marginTop: 8 }}>Upload</div>
+        <div style={{ marginTop: 8 }}>上传图片</div>
       </div>
     );
 
@@ -147,6 +150,10 @@ const OperationModal: FC<OperationModalProps> = props => {
         fileList.push(fileItem);
         setFileList([...fileList]);
         setLoading(false)
+        console.log('fileItem.url: ', fileItem.url)
+        form.setFieldsValue({
+          image_url: fileItem.url
+        })
         setImageUrl(fileItem.url)
       }
     }
@@ -189,7 +196,7 @@ const OperationModal: FC<OperationModalProps> = props => {
             name="image_url"
             label="图片链接"
           >
-            <Input placeholder="输入图片链接" />
+            <Input placeholder="图片链接" disabled/>
           </Form.Item>
         </Form>
       </div>
