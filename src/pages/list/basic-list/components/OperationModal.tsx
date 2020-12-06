@@ -28,7 +28,7 @@ const formLayout = {
   wrapperCol: { span: 15 },
 };
 
-const QINIU_SERVER = 'http://upload.qiniup.com'
+const QINIU_SERVER = 'https://upload.qiniup.com'
 const CDN_URL = 'https://cdn.axis-studio.org/'
 
 const OperationModal: FC<OperationModalProps> = props => {
