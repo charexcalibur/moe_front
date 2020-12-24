@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2020-03-17 17:36:19
  * @LastEditors: hayato
- * @LastEditTime: 2020-11-16 20:50:22
+ * @LastEditTime: 2020-12-24 13:23:57
  */
 /**
  * Ant Design Pro v4 use `@ant-design/pro-layout` to handle Layout.
@@ -67,50 +67,24 @@ export type BasicLayoutContext = { [K in 'location']: BasicLayoutProps[K] } & {
  */
 const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] => {
   // console.log('menuList: ', menuList)
-  return menuList.map(item => {
-    const localItem = { ...item, children: item.children ? menuDataRender(item.children) : [] };
-    // console.log('localItem: ', localItem)
-    // console.log('Authorized checked: ', Authorized.check(item.authority, localItem, null))
-    return Authorized.check(item.authority, localItem, null) as MenuDataItem;
-  });
+  // return menuList.map(item => {
+  //   const localItem = { ...item, children: item.children ? menuDataRender(item.children) : [] };
+  //   console.log('localItem: ', localItem)
+  //   console.log('item.authority: ', item.authority)
+  //   // console.log('Authorized checked: ', Authorized.check(item.authority, localItem, null))
+  //   return Authorized.check(item.authority, localItem, null) as MenuDataItem;
+  // });
+  return menuList
 }
 
 
 
-const defaultFooterDom = (
-  <DefaultFooter
-    copyright="2019 蚂蚁金服体验技术部出品"
-    links={[
-      {
-        key: 'Ant Design Pro',
-        title: 'Ant Design Pro',
-        href: 'https://pro.ant.design',
-        blankTarget: true,
-      },
-      {
-        key: 'github',
-        title: <GithubOutlined />,
-        href: 'https://github.com/ant-design/ant-design-pro',
-        blankTarget: true,
-      },
-      {
-        key: 'Ant Design',
-        title: 'Ant Design',
-        href: 'https://ant.design',
-        blankTarget: true,
-      },
-    ]}
-  />
-);
+
 
 const footerRender: BasicLayoutProps['footerRender'] = () => {
-  if (!isAntDesignPro()) {
-    return defaultFooterDom;
-  }
 
   return (
     <>
-      {defaultFooterDom}
       <div
         style={{
           padding: '0px 24px 24px',
