@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2020-03-17 23:02:18
  * @LastEditors: hayato
- * @LastEditTime: 2020-12-24 14:48:24
+ * @LastEditTime: 2020-12-26 23:10:58
  */
 import { AnyAction, Reducer } from 'redux';
 import { message } from 'antd';
@@ -70,7 +70,7 @@ const Model: ModelType = {
           }
         }
         const menus = response.menu
-        yield put(routerRedux.replace(redirect || menus[0]));
+        yield put(routerRedux.replace(redirect || menus[menus.length - 1]));
       } else if(response.status === '1004') {
         message.success('账号密码错误！');
       } else {

@@ -128,7 +128,7 @@ export default {
               path: '/dashboard',
               name: 'dashboard',
               icon: 'dashboard',
-              authority: ['admin','fhc_guest'],
+              authority: ['admin'],
               routes: [
                 {
                   name: 'analysis',
@@ -180,6 +180,10 @@ export default {
               icon: 'table',
               name: 'list',
               routes: [
+                {
+                  path: '/list',
+                  redirect: '/list/basic-list',
+                },
                 {
                   path: '/list/search',
                   name: 'search-list',
@@ -340,7 +344,7 @@ export default {
             {
               path: '/',
               redirect: '/dashboard/analysis',
-              authority: ['admin', 'user', 'fhc_guest'],
+              authority: ['admin', 'user'],
             },
             {
               component: '404',
