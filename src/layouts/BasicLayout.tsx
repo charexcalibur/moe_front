@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2020-03-17 17:36:19
  * @LastEditors: hayato
- * @LastEditTime: 2020-12-24 13:23:57
+ * @LastEditTime: 2021-01-14 22:53:34
  */
 /**
  * Ant Design Pro v4 use `@ant-design/pro-layout` to handle Layout.
@@ -19,20 +19,22 @@ import ProLayout, {
 } from '@ant-design/pro-layout';
 import { formatMessage } from 'umi-plugin-react/locale';
 import React, { useEffect } from 'react';
-import { Link } from 'umi';
+import { Link, router } from 'umi';
 import { Dispatch } from 'redux';
 import { connect } from 'dva';
-import { GithubOutlined, DashboardFilled, UnorderedListOutlined} from '@ant-design/icons';
+import { GithubOutlined, DashboardFilled, TableOutlined, FundOutlined, UnorderedListOutlined} from '@ant-design/icons';
 import { Result, Button } from 'antd';
 import Authorized from '@/utils/Authorized';
 import RightContent from '@/components/GlobalHeader/RightContent';
 import { ConnectState } from '@/models/connect';
 import { isAntDesignPro, getAuthorityFromRouter } from '@/utils/utils';
 import logo from '../assets/logo.svg';
+import { any } from 'prop-types';
 
-const iconMaps = {
-  DashboardFilled,
-  UnorderedListOutlined
+
+const iconsEnum = {
+  table: <TableOutlined />,
+  dashboard: <FundOutlined />
 }
 
 const noMatch = (
@@ -47,6 +49,7 @@ const noMatch = (
     }
   />
 );
+
 export interface BasicLayoutProps extends ProLayoutProps {
   breadcrumbNameMap: {
     [path: string]: MenuDataItem;
@@ -57,32 +60,14 @@ export interface BasicLayoutProps extends ProLayoutProps {
   settings: Settings;
   dispatch: Dispatch;
 }
+
 export type BasicLayoutContext = { [K in 'location']: BasicLayoutProps[K] } & {
   breadcrumbNameMap: {
     [path: string]: MenuDataItem;
   };
 };
-/**
- * use Authorized check all menu item
- */
-const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] => {
-  // console.log('menuList: ', menuList)
-  // return menuList.map(item => {
-  //   const localItem = { ...item, children: item.children ? menuDataRender(item.children) : [] };
-  //   console.log('localItem: ', localItem)
-  //   console.log('item.authority: ', item.authority)
-  //   // console.log('Authorized checked: ', Authorized.check(item.authority, localItem, null))
-  //   return Authorized.check(item.authority, localItem, null) as MenuDataItem;
-  // });
-  return menuList
-}
-
-
-
-
 
 const footerRender: BasicLayoutProps['footerRender'] = () => {
-
   return (
     <>
       <div
@@ -109,15 +94,11 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
     children,
     settings,
     menuData,
+    loading,
     location = {
       pathname: '/',
     },
   } = props;
-  /**
-   * constructor
-   */
-
-
 
   useEffect(() => {
     if (dispatch) {
@@ -129,9 +110,6 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
       });
     }
   }, []);
-  /**
-   * init variables
-   */
 
   const handleMenuCollapse = (payload: boolean): void => {
     if (dispatch) {
@@ -140,23 +118,46 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
         payload,
       });
     }
-  }; // get children authority
+  };
 
   const authorized = getAuthorityFromRouter(props.route.routes, location.pathname || '/') || {
     authority: undefined,
   };
 
-  const serverMenuItem = ():MenuDataItem[]=>{
-    const transMenuItem :MenuDataItem[] = [];
-    if(Array.isArray(menuData)){
-      menuData.forEach((v) => {
-        const localV = { ...v, children: v.children ? menuDataRender(v.children) : [] };
-        const localMenuDataItem = Authorized.check(v.authority, localV, null) as MenuDataItem;
-        transMenuItem.push(localMenuDataItem);
-      });
-    }
-    return transMenuItem;
+  const mappingIcon = (menuData: MenuDataItem[]): MenuDataItem[] => {
+    const mappingMenu = menuData.map(item => ({
+      ...item,
+      icon: iconsEnum[item.icon],
+      children: item.children ? mappingIcon(item.children) : [],
+    }));
+    return mappingMenu;
   };
+
+  const _menuData = menuData !== undefined ? mappingIcon(menuData) : []
+
+  const checkMenuAccess = (menuItem: MenuDataItem): any => {
+    if(menuItem.children) {
+      menuItem.children.forEach((item) => {
+        return checkMenuAccess(item)
+      })
+    } else {
+      return menuItem.path === window.location.pathname
+    }
+  }
+
+
+  if(!loading && loading !== undefined && menuData !== undefined) {
+    const pathAccess = menuData.find((item) => {
+      if(window.location.pathname === '/404') {
+        return true
+      }
+      return checkMenuAccess(item)
+    })
+
+    if(!pathAccess && pathAccess !== undefined) {
+      router.push('/404')
+    }
+  }
 
   return (
     <>
@@ -193,7 +194,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
           );
         }}
         footerRender={footerRender}
-        menuDataRender={serverMenuItem}
+        menuDataRender={() => _menuData}
         rightContentRender={() => <RightContent />}
         {...props}
         {...settings}
@@ -202,21 +203,13 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
           {children}
         </Authorized>
       </ProLayout>
-      <SettingDrawer
-        settings={settings}
-        onSettingChange={config =>
-          dispatch({
-            type: 'settings/changeSetting',
-            payload: config,
-          })
-        }
-      />
     </>
   );
 };
 
-export default connect(({ global, settings, menu }: ConnectState) => ({
+export default connect(({ global, settings, menu, loading }: ConnectState) => ({
   collapsed: global.collapsed,
   settings,
-  menuData: menu.menuData
+  menuData: menu.menuData,
+  loading: loading.models.menu,
 }))(BasicLayout);
