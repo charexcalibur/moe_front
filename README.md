@@ -8,7 +8,7 @@
 
 # Moe front
 
-A admin product build by antd pro.
+A admin product built by antd pro.
 
 ## 简介
 
