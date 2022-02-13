@@ -342,6 +342,13 @@ export default {
               ],
             },
             {
+              path: '/rankModel',
+              name: 'model',
+              icon: 'dashboard',
+              authority: ['admin'],
+              component: './rankModel',
+            },
+            {
               path: '/',
               redirect: '/dashboard/analysis',
               authority: ['admin', 'user'],

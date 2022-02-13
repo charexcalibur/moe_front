@@ -1,3 +1,10 @@
+/*
+ * @Description: Description
+ * @Author: hayato
+ * @Date: 2020-11-09 20:58:08
+ * @LastEditors: hayato
+ * @LastEditTime: 2021-06-04 16:17:01
+ */
 export default {
   'menu.welcome': '欢迎',
   'menu.more-blocks': '更多区块',
@@ -50,4 +57,6 @@ export default {
   'menu.editor.flow': '流程编辑器',
   'menu.editor.mind': '脑图编辑器',
   'menu.editor.koni': '拓扑编辑器',
+  'menu.model': '模型',
+  'menu.模型': '模型'
 };

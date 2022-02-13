@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2020-03-17 17:36:19
  * @LastEditors: hayato
- * @LastEditTime: 2020-11-06 13:07:22
+ * @LastEditTime: 2021-09-28 17:07:50
  */
 /**
  * request 网络请求工具
@@ -78,7 +78,8 @@ const request = extend({
 
 request.interceptors.request.use((url, options) => {
   const headers = {
-    'Authorization': getToken()
+    'Authorization': getToken(),
+    'Content-encoding': 'gzip'
   }
   return {
     url,
