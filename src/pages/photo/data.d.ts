@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-13 17:27:13
  * @LastEditors: hayato
- * @LastEditTime: 2022-02-13 17:27:14
+ * @LastEditTime: 2022-03-06 23:19:34
  */
 import { AnyAction, Reducer } from 'redux'
 import { EffectsCommandMap } from 'dva'
@@ -17,7 +17,8 @@ export interface TagsType {
 }
 
 export interface CategoriesType {
-  name: string;
+  category_name: string;
+  id: number;
 }
 
 export interface ImageSizesType {
@@ -25,6 +26,7 @@ export interface ImageSizesType {
   height: string;
   cdn_url: string;
   type: number;
+  id: number;
 }
 
 export interface EquipmentsType {
@@ -43,7 +45,7 @@ export interface PhotoListItemType {
   aperture: string;
   shutter: string;
   focal_length: string;
-  tas: TagsType[];
+  tags: TagsType[];
   rate: number;
   categories: CategoriesType[];
   image_sizes: ImageSizesType[];
@@ -54,9 +56,39 @@ export interface PhotoListItemType {
 }
 
 
+export interface TagsType {
+  id: number;
+  add_time: string;
+  modify_time: string;
+  tag_name: string;
+}
+
+export interface EquipmentsType {
+  id: number;
+  add_time: string;
+  modify_time: string;
+  name: string;
+  brand: string;
+  type: number;
+  remark: string;
+}
+
+export interface CategoryType {
+  id: number;
+  add_time: string;
+  modify_time: string;
+  category_name: string;
+}
+
 export interface StateType {
-  results?: PhotoListItemType[];
+  results?: PhotoListItemType[] | [];
   total: number;
+  tagsResults?: TagsType[] | [];
+  totalTags: number;
+  equipmentsResults?: EquipmentsType[] | [];
+  totalEquipments: number;
+  categoryResults?: CategoryType[] | [];
+  totalCategory: number;
 }
 
 
@@ -69,9 +101,17 @@ export interface ModelType {
   namespace: string;
   state: StateType;
   effects: {
-    fetch: Effect
+    fetch: Effect;
+    patchPhoto: Effect;
+    addPhoto: Effect;
+    fetchTags: Effect;
+    fetchCategory: Effect;
+    fetchEquipments: Effect;
   };
   reducers: {
     queryList: Reducer<StateType>;
+    queryTags: Reducer<StateType>;
+    queryCategory: Reducer<StateType>;
+    queryEquipments: Reducer<StateType>;
   }
 }

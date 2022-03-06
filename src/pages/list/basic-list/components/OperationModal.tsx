@@ -180,7 +180,12 @@ const OperationModal: FC<OperationModalProps> = props => {
         <div className={styles.uploadContainer}>
           {upLoad}
         </div>
-        <Form className={styles.listModalFormContainer} {...formLayout} form={form} onFinish={handleFinish}>
+        <Form 
+          className={styles.listModalFormContainer}
+          {...formLayout}
+          form={form} 
+          onFinish={handleFinish}
+        >
           <Form.Item
             name="author"
             label="作者"

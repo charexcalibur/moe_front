@@ -58,5 +58,6 @@ export default {
   'menu.editor.mind': '脑图编辑器',
   'menu.editor.koni': '拓扑编辑器',
   'menu.model': '模型',
-  'menu.模型': '模型'
+  'menu.模型': '模型',
+  'menu.photo': '照片'
 };
