@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-16 22:41:51
  * @LastEditors: hayato
- * @LastEditTime: 2022-03-06 23:26:42
+ * @LastEditTime: 2022-04-12 00:19:15
  */
 import React, { FC, useRef, useState, useEffect } from 'react'
 import { Modal, Form, Button, Input, Result, Upload, message, Select } from 'antd'
@@ -12,8 +12,14 @@ import { connect } from 'dva'
 import { uniqueId } from 'lodash'
 import styles from '../style.less'
 import { PhotoListItemType, StateType } from '../data'
-import { PlusOutlined } from '@ant-design/icons'
+import { PlusOutlined, LoadingOutlined } from '@ant-design/icons'
 import { any } from 'prop-types'
+import * as qiniu from 'qiniu-js'
+import { getQiniuToken } from '@/pages/list/basic-list/service'
+import prefixUrl from './../../../../prefix'
+
+const QINIU_SERVER = prefixUrl.QINIU_SERVER
+const CDN_URL = prefixUrl.CDN_URL
 
 const { Option } = Select
 
@@ -62,6 +68,9 @@ const PhotoModel: FC<PhotoModelProps> = props => {
   const [tagsSelect, setTagsSelect] = useState(current?.tags?.map(item => item.id))
   const [categorySelect, setCategorySelect] = useState(current?.categories?.map(item => item.id))
   const [equipmentsSelect, setEquipmentsSelect] = useState(current?.equipments?.map(item => item.id))
+  const [loading, setLoading] = useState<boolean>(false)
+  const [imageUrl, setImageUrl] = useState<string>('')
+  // const [fileList, setFileList] = useState<any[]>([])
 
   useEffect(() => {
     if (form && !visible) {
@@ -106,6 +115,15 @@ const PhotoModel: FC<PhotoModelProps> = props => {
     })
   }, [])
 
+  // useEffect(() => {
+  //   console.log('getQiniuToken')
+  //   if (visible) {
+  //     dispatch({
+  //       type: 'listAndbasicList/getQiniuToken'
+  //     })
+  //   }
+  // }, [visible])
+
   const formItemLayout = {
     labelCol: { span: 8 },
     wrapperCol: { span: 32 }
@@ -130,10 +148,41 @@ const PhotoModel: FC<PhotoModelProps> = props => {
 
   const uploadButton = (
     <div>
-      <PlusOutlined />
+      {loading ? <LoadingOutlined /> : <PlusOutlined />}
       <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
+
+  const handleChange = ({ file, fileList }: {
+    file: any,
+    fileList: any
+  }) => {
+    console.log('file: ', file)
+    console.log('fileList: ', fileList)
+    if (file.status === 'uploading') {
+      setLoading(true)
+      return;
+    }
+
+    if (file.status === 'done') {
+      const { uid, name, type, thumbUrl, status, response = {} } = file;
+      const fileItem = {
+        uid,
+        name,
+        type,
+        thumbUrl,
+        status,
+        url: (CDN_URL + response.key || "")
+      };
+      console.log('fileItem: ', fileItem)
+      fileList.pop();
+      fileList.push(fileItem)
+      // setFileList([...fileList])
+      setLoading(false)
+      console.log('fileItem.url: ', fileItem.url)
+      setImageUrl(fileItem.url)
+    }
+  }
 
   const getImageList = () => {
     if (current?.image_sizes === undefined) {
@@ -141,28 +190,40 @@ const PhotoModel: FC<PhotoModelProps> = props => {
     }
     const fileList = !current ? [] : current.image_sizes.map(item => {
       return {
-        uid: item.id,
+        uid: item.id+'',
         url: item.cdn_url,
         name: current.name === undefined ? '' : current.name,
-        size: '',
+        size: 0,
         type: ''
       }
     })
     return (
       <div>
         <Upload
+          name="file"
           listType="picture-card"
           fileList={fileList}
+          action={QINIU_SERVER}
+          data={async () => {
+            const res = await getQiniuToken()
+            return {
+              token: res.token,
+              key: res.key
+            }
+
+          }}
           onPreview={handlePreview}
           beforeUpload={beforeUpload}
+          onChange={handleChange}
         >
-          {fileList.length >= 8 ? null : uploadButton}
+          {fileList.length >= 2 ? null : uploadButton}
         </Upload>
       </div>
     )
   }
 
   const beforeUpload = (file: any) => {
+    console.log('beforeUpload: ')
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
       message.error('You can only upload JPG/PNG file!');
@@ -188,7 +249,7 @@ const PhotoModel: FC<PhotoModelProps> = props => {
     const tags_id = e.map((item: any) => item.key)
     setTagsSelect(tags_id)
   }
-  
+
   const handleCategoriesChange = (value: any, e) => {
     const category_id = e.map((item: any) => item.key)
     setCategorySelect(category_id)

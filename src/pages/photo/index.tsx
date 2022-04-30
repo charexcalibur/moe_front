@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-13 17:25:03
  * @LastEditors: hayato
- * @LastEditTime: 2022-03-06 23:26:52
+ * @LastEditTime: 2022-04-30 15:34:35
  */
 
 import React, { FC, useRef, useState, useEffect } from 'react';
@@ -39,13 +39,14 @@ export const Photo: FC<PhotoListProps> = (props) => {
   const [current, setCurrent] = useState<Partial<PhotoListItemType> | undefined>(undefined)
   const [done, setDone] = useState<boolean>(false)
   const [modelType, setModelType] = useState<number>(0) // 0 for new, 1 for edit
-
+  const [limit, setLimit] = useState<number>(10)
   useEffect(() => {
     dispatch({
       type: 'photoList/fetch',
       payload: {
-        limit: 10,
-        page
+        limit,
+        page,
+        ordering: '-add_time'
       }
     })
   }, [])
@@ -85,8 +86,9 @@ export const Photo: FC<PhotoListProps> = (props) => {
     dispatch({
       type: 'photoList/fetch',
       payload: {
-        limit: 10,
-        page
+        limit,
+        page,
+        ordering: '-add_time'
       }
     })
     setDone(false)
@@ -141,6 +143,49 @@ export const Photo: FC<PhotoListProps> = (props) => {
     }
   ]
 
+  const handlePageChange = (_page: number) => {
+    let payload = {}
+    payload = {
+      limit,
+      page: _page,
+      ordering: '-add_time'
+    }
+    dispatch({
+      type: 'photoList/fetch',
+      payload
+    });
+    setPage(_page)
+  }
+
+  const handlePageSizeChange = (pageSize: number) => {
+    let payload = {}
+    payload = {
+      limit: pageSize,
+      page,
+      ordering: '-add_time'
+    }
+    dispatch({
+      type: 'photoList/fetch',
+      payload
+    });
+    setLimit(pageSize)
+  }
+
+  const paginationProps = {
+    onChange: (_page: number) => handlePageChange(_page),
+    onShowSizeChange: (_current: number, pageSize: number) =>  handlePageSizeChange(pageSize),
+    showSizeChanger: true,
+    showQuickJumper: true,
+    pageSize: limit,
+    current: page,
+    total,
+    pageSizeOptions: [
+      '5',
+      '10',
+      '20',
+      '50'
+    ]
+  }
 
   return (
     <Layout>
@@ -152,6 +197,7 @@ export const Photo: FC<PhotoListProps> = (props) => {
           <Table
             columns={columns}
             dataSource={results}
+            pagination={paginationProps}
             rowKey={() => uniqueId()}
           ></Table>
         </Space>

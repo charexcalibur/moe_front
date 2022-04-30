@@ -10,7 +10,7 @@ import { StateType } from '../model';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { any } from 'prop-types';
 import * as qiniu from 'qiniu-js'
-
+import prefixUrl from './../../../../../prefix'
 interface OperationModalProps {
   done: boolean;
   visible: boolean;
@@ -28,8 +28,8 @@ const formLayout = {
   wrapperCol: { span: 15 },
 };
 
-const QINIU_SERVER = 'https://upload.qiniup.com'
-const CDN_URL = 'https://cdn.axis-studio.org/'
+const QINIU_SERVER = prefixUrl.QINIU_SERVER
+const CDN_URL = prefixUrl.CDN_URL
 
 const OperationModal: FC<OperationModalProps> = props => {
   console.log('props: ', props)
