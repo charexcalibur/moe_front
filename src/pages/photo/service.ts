@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-13 17:29:01
  * @LastEditors: hayato
- * @LastEditTime: 2022-02-28 21:52:12
+ * @LastEditTime: 2022-04-30 19:09:37
  */
 import request from '@/utils/request'
 
@@ -45,5 +45,40 @@ export async function queryCategory(params: any) {
 export async function queryEquipments(params: any) {
   return request('/wallpaper/equipments/', {
     params
+  })
+}
+
+export async function createImageSizes(params: {
+  width?: string
+  height?: string
+  cdn_url?: string
+  type: number
+  image: number
+}) {
+  return request('/wallpaper/imagesizes/', {
+    method: 'POST',
+    data: {...params}
+  })
+}
+
+export async function patchImageSizes(params: {
+  id: number
+  width: string
+  height: string
+  cdn_url: string
+  type: number
+  image?: number
+}) {
+  return request(`/wallpaper/imagesizes/${params.id}/`, {
+    method: 'PATCH',
+    data: {...params}
+  })
+}
+
+export async function deleteImageSizes(params: {
+  id: number
+}) {
+  return request(`/wallpaper/imagesizes/${params.id}/`, {
+    method: 'DELETE'
   })
 }

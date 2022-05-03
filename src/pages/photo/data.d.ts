@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-13 17:27:13
  * @LastEditors: hayato
- * @LastEditTime: 2022-03-06 23:19:34
+ * @LastEditTime: 2022-04-30 18:39:31
  */
 import { AnyAction, Reducer } from 'redux'
 import { EffectsCommandMap } from 'dva'
@@ -36,7 +36,7 @@ export interface EquipmentsType {
 }
 
 export interface PhotoListItemType {
-  id: string;
+  id: number;
   uid: string;
   name: string;
   des: string;
@@ -89,6 +89,7 @@ export interface StateType {
   totalEquipments: number;
   categoryResults?: CategoryType[] | [];
   totalCategory: number;
+  loading: boolean;
 }
 
 

@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-13 17:28:47
  * @LastEditors: hayato
- * @LastEditTime: 2022-02-28 22:53:32
+ * @LastEditTime: 2022-04-30 17:52:18
  */
 import { queryPhotoList, patchPhotoInfo, addPhotoInfo, queryTags, queryCategory, queryEquipments } from './service'
 import { ModelType, StateType} from './data.d'
@@ -16,7 +16,8 @@ const defaultState = {
   equipmentsResults: [],
   totalEquipments: 0,
   categoryResults: [],
-  totalCategory: 0
+  totalCategory: 0,
+  loading: true
 }
 
 const Model: ModelType = {
@@ -29,7 +30,8 @@ const Model: ModelType = {
     equipmentsResults: [],
     totalEquipments: 0,
     categoryResults: [],
-    totalCategory: 0
+    totalCategory: 0,
+    loading: false,
   },
   effects: {
     *fetch({ payload }, { call, put }) {
@@ -72,28 +74,32 @@ const Model: ModelType = {
       return {
         ...state,
         results: action.payload.results,
-        total: action.payload.count
+        total: action.payload.count,
+        loading: false
       }
     },
     queryTags(state = defaultState, action) {
       return {
         ...state,
         tagsResults: action.payload.results,
-        totalTags: action.payload.count
+        totalTags: action.payload.count,
+        loading: false
       }
     },
     queryCategory(state = defaultState, action) {
       return {
         ...state,
         categoryResults: action.payload.results,
-        totalCategory: action.payload.count
+        totalCategory: action.payload.count,
+        loading: false
       }
     },
     queryEquipments(state = defaultState, action) {
       return {
         ...state,
         equipmentsResults: action.payload.results,
-        totalEquipments: action.payload.count
+        totalEquipments: action.payload.count,
+        loading: false
       }
     }
   }

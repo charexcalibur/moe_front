@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-13 17:25:03
  * @LastEditors: hayato
- * @LastEditTime: 2022-04-30 15:34:35
+ * @LastEditTime: 2022-04-30 19:57:55
  */
 
 import React, { FC, useRef, useState, useEffect } from 'react';
@@ -14,25 +14,24 @@ import { uniqueId } from 'lodash'
 import styles from './style.less'
 import { PhotoListItemType, StateType } from './data.d'
 import PhotoModel  from './components/photoModel'
-
+import UploadModel  from './components/uploadModel'
+import { createImageSizes } from '@/pages/photo/service'
 const { Content } = Layout
 
 interface PhotoListProps {
   photoList: StateType;
   dispatch: Dispatch<any>;
-  loading: boolean;
 }
 
 export const Photo: FC<PhotoListProps> = (props) => {
+  console.log('props', props)
   const {
-    loading,
     dispatch,
     photoList: {
       results,
       total
-    } 
+    }
   } = props
-
 
   const [page, setPage] = useState<number>(1)
   const [isModalVisible, setIsModalVisible] = useState(false)
@@ -40,6 +39,9 @@ export const Photo: FC<PhotoListProps> = (props) => {
   const [done, setDone] = useState<boolean>(false)
   const [modelType, setModelType] = useState<number>(0) // 0 for new, 1 for edit
   const [limit, setLimit] = useState<number>(10)
+  const [isUploadModelVisible, setIsUploadModelVisible] = useState(false)
+  const [imageType, setImageType] = useState<number>(0) // 1 for origin, 2 for 4k, 3 for thumbnail
+  const [imageSizesCurrent, setImageSizesCurrent] = useState<any>({})
   useEffect(() => {
     dispatch({
       type: 'photoList/fetch',
@@ -51,19 +53,34 @@ export const Photo: FC<PhotoListProps> = (props) => {
     })
   }, [])
 
-  // const setAddBtnblur = () => {
-  //   if (addBtn.current) {
-  //     // eslint-disable-next-line react/no-find-dom-node
-  //     const addBtnDom = findDOMNode(addBtn.current) as HTMLButtonElement;
-  //     setTimeout(() => addBtnDom.blur(), 0);
-  //   }
-  // }
+  const reloadTable = () => {
+    dispatch({
+      type: 'photoList/fetch',
+      payload: {
+        limit,
+        page,
+        ordering: '-add_time'
+      }
+    })
+  }
+
 
   const _showPhoto = (record: PhotoListItemType) => {
     setCurrent(record)
     setModelType(1)
     setIsModalVisible(true)
     console.log(record)
+  }
+
+  const _showUpload = async (record: PhotoListItemType, type: number) => {
+    const res = await createImageSizes({
+      image: record.id,
+      type
+    })
+    console.log('res: ', res)
+    setImageSizesCurrent(res)
+    setImageType(type)
+    setIsUploadModelVisible(true)
   }
 
   const _addNewPhoto = () => {
@@ -80,6 +97,13 @@ export const Photo: FC<PhotoListProps> = (props) => {
   const handleCancel = () => {
     setIsModalVisible(false)
     setCurrent(undefined)
+    reloadTable()
+  }
+
+  const handleUploadCancel = () => {
+    setIsUploadModelVisible(false)
+    setImageSizesCurrent({})
+    reloadTable()
   }
 
   const handleDone = () => {
@@ -132,13 +156,22 @@ export const Photo: FC<PhotoListProps> = (props) => {
     },
     {
       title: 'action',
-      dataIndex: 'rank_url',
       render: (text: any, record: PhotoListItemType, index: number) => {
-        return (
+        return ([
           <Space size="middle">
-            <Button onClick={() => _showPhoto(record)} type="link">查看</Button>
-          </Space>
-        )
+            <Button onClick={() => _showPhoto(record)} type="link">编辑</Button>
+          </Space>,
+          <Space size="middle">
+          <Button
+            disabled={record.image_sizes?.length === 2 || record.image_sizes.filter(item => item.type === 2).length === 1}
+            onClick={() => _showUpload(record, 2)}
+            type="link"
+          >上传 4k</Button>
+          <Button
+            disabled={record.image_sizes?.length === 2 || record.image_sizes.filter(item => item.type === 3).length === 1}
+            onClick={() => _showUpload(record, 3)} type="link">上传 thumbnail</Button>
+        </Space>
+        ])
       }
     }
   ]
@@ -192,7 +225,7 @@ export const Photo: FC<PhotoListProps> = (props) => {
       <Content>
         <Space direction="vertical" className={styles.content}>
           <Button onClick={_addNewPhoto}>
-            新增图片
+            新增图片信息
           </Button>
           <Table
             columns={columns}
@@ -212,6 +245,13 @@ export const Photo: FC<PhotoListProps> = (props) => {
         onDone={handleDone}
         type={modelType}
       ></PhotoModel>
+      <UploadModel
+        destroyOnClose={true}
+        visible={isUploadModelVisible}
+        onCancel={handleUploadCancel}
+        current={imageSizesCurrent}
+        imageType={imageType}
+      ></UploadModel>
     </Layout>
   )
 }
