@@ -3,10 +3,11 @@
  * @Author: hayato
  * @Date: 2022-02-13 17:28:47
  * @LastEditors: hayato
- * @LastEditTime: 2022-04-30 17:52:18
+ * @LastEditTime: 2022-05-04 23:05:17
  */
 import { queryPhotoList, patchPhotoInfo, addPhotoInfo, queryTags, queryCategory, queryEquipments } from './service'
 import { ModelType, StateType} from './data.d'
+import { putQuotation } from '../list/basic-list/service'
 
 const defaultState = {
   results: [],
@@ -41,11 +42,23 @@ const Model: ModelType = {
         payload: Array.isArray(response.results) ? response: []
       })
     },
-    *patchPhoto({ payload }, { call }) {
-      yield call(patchPhotoInfo, payload)
+    *patchPhoto({ payload }, { call, put }) {
+      yield call(patchPhotoInfo, payload.current)
+      yield put({
+        type: 'fetch',
+        payload: {
+          ...payload.query
+        }
+      })
     },
-    *addPhoto({ payload }, { call }) {
-      yield call(addPhotoInfo, payload)
+    *addPhoto({ payload }, { call, put }) {
+      yield call(addPhotoInfo, payload.current)
+      yield put({
+        type: 'fetch',
+        payload: {
+          ...payload.query
+        }
+      })
     },
     *fetchTags({ payload }, { call, put}) {
       const response = yield call(queryTags, payload)

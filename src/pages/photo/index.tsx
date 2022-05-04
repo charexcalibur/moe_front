@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-13 17:25:03
  * @LastEditors: hayato
- * @LastEditTime: 2022-05-04 17:58:32
+ * @LastEditTime: 2022-05-04 23:02:57
  */
 
 import React, { FC, useRef, useState, useEffect } from 'react';
@@ -15,16 +15,15 @@ import styles from './style.less'
 import { PhotoListItemType, StateType } from './data.d'
 import PhotoModel  from './components/photoModel'
 import UploadModel  from './components/uploadModel'
-import { createImageSizes, patchPhotoInfo } from '@/pages/photo/service'
+import { createImageSizes, patchPhotoInfo, deletePhotoInfo } from '@/pages/photo/service'
 const { Content } = Layout
-
+const { confirm } = Modal
 interface PhotoListProps {
   photoList: StateType;
   dispatch: Dispatch<any>;
 }
 
 export const Photo: FC<PhotoListProps> = (props) => {
-  console.log('props', props)
   const {
     dispatch,
     photoList: {
@@ -106,6 +105,20 @@ export const Photo: FC<PhotoListProps> = (props) => {
     reloadTable()
   }
 
+  const handleDelete = (id: number) => {
+    confirm({
+      title: 'Are you sure delete this photo?',
+      content: 'This action cannot be undone.',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk: async () => {
+        await deletePhotoInfo({id})
+        reloadTable()
+      },
+    })
+  }
+
   const handleDone = () => {
     dispatch({
       type: 'photoList/fetch',
@@ -142,16 +155,25 @@ export const Photo: FC<PhotoListProps> = (props) => {
       console.log('dispatch patch')
       dispatch({
         type: 'photoList/patchPhoto',
-        payload: {...current}
+        payload: {current, query: {
+          limit,
+          page,
+          ordering: '-add_time'
+        }}
       })
     } else {
       dispatch({
         type: 'photoList/addPhoto',
-        payload: {...current}
+        payload: {current, query: {
+          limit,
+          page,
+          ordering: '-add_time'
+        }}
       })
     }
     setDone(true)
     setCurrent(undefined)
+    setIsModalVisible(false)
   }
 
   const columns = [
@@ -190,6 +212,10 @@ export const Photo: FC<PhotoListProps> = (props) => {
             type="link"
             onClick={() => handleImageShown(record.id, record.is_shown)}
           >{ record.is_shown === '1' ? '下线' : '上线' }</Button>
+          <Button
+            type="link"
+            onClick={() => handleDelete(record.id)}
+          >删除</Button>
         </Space>
         ])
       }

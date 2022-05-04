@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-13 17:29:01
  * @LastEditors: hayato
- * @LastEditTime: 2022-04-30 19:09:37
+ * @LastEditTime: 2022-05-04 22:23:22
  */
 import request from '@/utils/request'
 
@@ -20,6 +20,13 @@ export async function patchPhotoInfo(params: any) {
   return request(`/wallpaper/wallpapers/${id}/`, {
     method: 'PATCH',
     data: {...params}
+  })
+}
+
+export async function deletePhotoInfo(params: any) {
+  const id = params.id
+  return request(`/wallpaper/wallpapers/${id}/`, {
+    method: 'DELETE'
   })
 }
 

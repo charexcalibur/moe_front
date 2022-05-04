@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-16 22:41:51
  * @LastEditors: hayato
- * @LastEditTime: 2022-04-30 19:51:26
+ * @LastEditTime: 2022-05-04 23:07:13
  */
 import React, { FC, useState, useEffect } from 'react'
 import { Modal, Form, Button, Input, Result, Upload, message, Select, Card } from 'antd'
@@ -128,16 +128,14 @@ const PhotoModel: FC<PhotoModelProps> = props => {
     onSubmit(value)
   }
 
-  const modalFooter = !visible
-    ? { footer: null, onCancel: onCancel }
-    : { okText: '保存', onOk: handleSubmit, onCancel }
+  const modalFooter = { okText: '保存', onOk: handleSubmit, onCancel }
 
-  const uploadButton = (
-    <div>
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </div>
-  );
+  // const uploadButton = (
+  //   <div>
+  //     {loading ? <LoadingOutlined /> : <PlusOutlined />}
+  //     <div style={{ marginTop: 8 }}>Upload</div>
+  //   </div>
+  // );
 
   const handleChange = ({ file, fileList }: {
     file: any,
@@ -302,26 +300,11 @@ const PhotoModel: FC<PhotoModelProps> = props => {
   }
 
   const getModalContent = () => {
-    if (done) {
-      return (
-        <Result
-          status="success"
-          title="操作成功"
-          extra={
-            <Button type="primary" onClick={onDone}>
-              知道了
-            </Button>
-          }
-          className={styles.formResult}
-        />
-      );
-    }
-
 
 
     return (
       <div className={styles.photoModelContent}>
-        { type == 0 ? <></> : <div className={styles.modelImage}>{getImageList()}</div>}
+        {/* { type == 0 ? <></> : <div className={styles.modelImage}>{getImageList()}</div>} */}
         <div className={styles.modelFormContainer}>
           <Form
             form={form}
@@ -374,6 +357,12 @@ const PhotoModel: FC<PhotoModelProps> = props => {
             <Form.Item
               name='iso'
               label='iso'
+            >
+              <Input placeholder="请输入" />
+            </Form.Item>
+            <Form.Item
+              name='rate'
+              label='rate'
             >
               <Input placeholder="请输入" />
             </Form.Item>
