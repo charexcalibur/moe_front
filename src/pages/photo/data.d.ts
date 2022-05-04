@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-13 17:27:13
  * @LastEditors: hayato
- * @LastEditTime: 2022-04-30 18:39:31
+ * @LastEditTime: 2022-05-04 17:49:23
  */
 import { AnyAction, Reducer } from 'redux'
 import { EffectsCommandMap } from 'dva'
@@ -53,6 +53,7 @@ export interface PhotoListItemType {
   modify_time: string;
   equipments: EquipmentsType[];
   shooting_date: string;
+  is_shown: string;
 }
 
 

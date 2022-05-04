@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-13 17:25:03
  * @LastEditors: hayato
- * @LastEditTime: 2022-04-30 19:57:55
+ * @LastEditTime: 2022-05-04 17:58:32
  */
 
 import React, { FC, useRef, useState, useEffect } from 'react';
@@ -15,7 +15,7 @@ import styles from './style.less'
 import { PhotoListItemType, StateType } from './data.d'
 import PhotoModel  from './components/photoModel'
 import UploadModel  from './components/uploadModel'
-import { createImageSizes } from '@/pages/photo/service'
+import { createImageSizes, patchPhotoInfo } from '@/pages/photo/service'
 const { Content } = Layout
 
 interface PhotoListProps {
@@ -119,6 +119,22 @@ export const Photo: FC<PhotoListProps> = (props) => {
     setIsModalVisible(false)
   }
 
+  const handleImageShown = async (id: number, is_show: string) => {
+    if (is_show === '1') {
+     await patchPhotoInfo({
+        id,
+        is_shown: '0'
+     })
+     reloadTable()
+    } else {
+      await patchPhotoInfo({
+        id,
+        is_shown: '1'
+      })
+      reloadTable()
+    }
+  }
+
   const SubmitForm = (current: any) => {
     console.log('SubmitForm: ', current)
     // setAddBtnblur()
@@ -170,6 +186,10 @@ export const Photo: FC<PhotoListProps> = (props) => {
           <Button
             disabled={record.image_sizes?.length === 2 || record.image_sizes.filter(item => item.type === 3).length === 1}
             onClick={() => _showUpload(record, 3)} type="link">上传 thumbnail</Button>
+          <Button
+            type="link"
+            onClick={() => handleImageShown(record.id, record.is_shown)}
+          >{ record.is_shown === '1' ? '下线' : '上线' }</Button>
         </Space>
         ])
       }
