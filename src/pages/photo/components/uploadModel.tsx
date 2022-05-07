@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-04-30 18:00:40
  * @LastEditors: hayato
- * @LastEditTime: 2022-04-30 20:06:37
+ * @LastEditTime: 2022-05-07 22:52:23
  */
 /*
  * @Description: Description
@@ -13,16 +13,17 @@
  * @LastEditTime: 2022-04-30 17:57:52
  */
 import React, { FC, useState, useEffect } from 'react'
-import { Modal, Form, Button, Input, Result, Upload, message, Select, Card } from 'antd'
-import { Dispatch } from 'redux'
+import { Modal, Form, Button, Input, Result, Upload, message, Card } from 'antd'
 import styles from '../style.less'
-import { PhotoListItemType, StateType } from '../data'
+import { PhotoListItemType } from '../data'
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons'
 import * as qiniu from 'qiniu-js'
 import { getQiniuToken } from '@/pages/list/basic-list/service'
 import prefixUrl from './../../../../prefix'
-import { createImageSizes, patchImageSizes } from '@/pages/photo/service'
+import { patchImageSizes, patchPhotoInfo } from '@/pages/photo/service'
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
+import { deleteImageSizes } from '@/pages/photo/service'
+import Exif from 'exif-js'
 
 const QINIU_SERVER = prefixUrl.QINIU_SERVER
 const CDN_URL = prefixUrl.CDN_URL
@@ -31,12 +32,10 @@ interface PhotoModelProps {
   done?: boolean;
   visible: boolean;
   current: Partial<PhotoListItemType> | undefined;
-  onDone: () => void;
   onCancel: () => void;
   destroyOnClose: boolean;
-  type: number;
-  photoList: any;
   imageType: number;
+  shouldPatchInfo: boolean;
 }
 
 const UploadModel: FC<PhotoModelProps> = props => {
@@ -48,7 +47,8 @@ const UploadModel: FC<PhotoModelProps> = props => {
     visible,
     onCancel,
     current,
-    imageType
+    imageType,
+    shouldPatchInfo
   } = props
 
 
@@ -57,6 +57,7 @@ const UploadModel: FC<PhotoModelProps> = props => {
   const [loading, setLoading] = useState<boolean>(false)
   const [imageUrl, setImageUrl] = useState<string>('')
   const [imageName, setImageName] = useState<string>('')
+  const [photoInfo, setPhotoInfo] = useState<any>({})
   // const [fileList, setFileList] = useState<any[]>([])
 
   useEffect(() => {
@@ -92,6 +93,13 @@ const UploadModel: FC<PhotoModelProps> = props => {
     value.id = current.id
     await patchImageSizes(value)
     message.success('操作成功')
+    console.log('photoInfo: ', photoInfo)
+    console.log('shouldPatchInfo: ', shouldPatchInfo)
+    if (shouldPatchInfo) {
+      const infoParams = {id: current.image, ...photoInfo}
+      await patchPhotoInfo(infoParams)
+    }
+
     onCancel()
   }
 
@@ -140,6 +148,13 @@ const UploadModel: FC<PhotoModelProps> = props => {
     }
   }
 
+
+  const handleRemove = async (file: any) => {
+    console.log('handle remove: ', file)
+    await deleteImageSizes({id: file.id})
+    onCancel()
+  }
+
   const getImageList = () => {
     console.log('getImageList current: ', current)
     const imageSize = [
@@ -181,6 +196,7 @@ const UploadModel: FC<PhotoModelProps> = props => {
             onPreview={handlePreview}
             beforeUpload={beforeUpload}
             onChange={handleChange}
+            onRemove={handleRemove}
           >
             {uploadButton}
           </Upload>
@@ -217,7 +233,41 @@ const UploadModel: FC<PhotoModelProps> = props => {
   }
 
   const beforeUpload = (file: any) => {
-    console.log('beforeUpload: ')
+    console.log('beforeUpload: ', file)
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.addEventListener('load', (event: any) => {
+      const _loadedImageUrl = event.target.result;
+      const image = document.createElement('img');
+      image.src = _loadedImageUrl;
+      image.addEventListener('load', () => {
+        const { width, height } = image;
+        // set image width and height to your state here
+        console.log(width, height);
+        form.setFieldsValue({
+          width,
+          height
+        })
+      });
+    });
+
+    Exif.getData(file, function() {
+      console.log('exif get data: ', this)
+      console.log('getAllTags', Exif.getAllTags(this))
+      const dateList = Exif.getTag(this, 'DateTimeOriginal').split(' ')[0].split(':')
+
+      const imageInfo = {
+        iso: Exif.getTag(this, 'ISOSpeedRatings'),
+        aperture: `F ${Exif.getTag(this, 'FNumber')}`,
+        shutter: `${Exif.getTag(this, 'ExposureTime').numerator}/${Exif.getTag(this, 'ExposureTime').denominator}`,
+        focal_length: `${Exif.getTag(this, 'FocalLength').numerator/Exif.getTag(this, 'FocalLength').denominator} mm`,
+        shooting_date: `${dateList[0]}年${dateList[1]}月${dateList[2]}日`
+
+      }
+
+      setPhotoInfo(imageInfo)
+    })
+
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
       message.error('You can only upload JPG/PNG file!');

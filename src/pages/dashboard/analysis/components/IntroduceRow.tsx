@@ -1,45 +1,40 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Col, Row, Tooltip } from 'antd';
-import { FormattedMessage } from 'umi-plugin-react/locale';
-import React from 'react';
-// import numeral from 'numeral';
+import React from 'react'; // import numeral from 'numeral';
+
 import { ChartCard, MiniArea, MiniBar, MiniProgress, Field } from './Charts';
 import { BlogData } from '../data.d';
 import Trend from './Trend';
 import styles from '../style.less';
-
 const topColResponsiveProps = {
   xs: 24,
   sm: 12,
   md: 12,
   lg: 12,
   xl: 6,
-  style: { marginBottom: 24 },
+  style: {
+    marginBottom: 24,
+  },
 };
 
-const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: BlogData; }) => (
+const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: BlogData }) => (
   <Row gutter={24}>
     <Col {...topColResponsiveProps}>
       <ChartCard
         bordered={false}
-        title='博客总数'
+        title="博客总数"
         total={visitData.totalBlogCount}
         loading={loading}
         contentHeight={46}
         action={
-          <Tooltip
-            title={
-              <FormattedMessage
-                id="dashboardandanalysis.analysis.introduce"
-                defaultMessage="Introduce"
-              />
-            }
-          >
+          <Tooltip title="指标说明">
             <InfoCircleOutlined />
           </Tooltip>
         }
         footer={
-          <a href="https://blog.axis-studio.org" target="blank">https://blog.axis-studio.org</a>
+          <a href="https://blog.axis-studio.org" target="blank">
+            https://blog.axis-studio.org
+          </a>
         }
       />
     </Col>
@@ -48,21 +43,13 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Blo
       <ChartCard
         bordered={false}
         loading={loading}
-        title='语录总数'
+        title="语录总数"
         action={
-          <Tooltip
-            title={
-              <FormattedMessage
-                id="dashboardandanalysis.analysis.introduce"
-                defaultMessage="Introduce"
-              />
-            }
-          >
+          <Tooltip title="指标说明">
             <InfoCircleOutlined />
           </Tooltip>
         }
-        total={visitData.quoData}
-        // footer={
+        total={visitData.quoData} // footer={
         //   <Field
         //     label={
         //       <FormattedMessage
@@ -82,33 +69,13 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Blo
       <ChartCard
         bordered={false}
         loading={loading}
-        title={
-          <FormattedMessage id="dashboardandanalysis.analysis.payments" defaultMessage="Payments" />
-        }
+        title="支付笔数"
         action={
-          <Tooltip
-            title={
-              <FormattedMessage
-                id="dashboardandanalysis.analysis.introduce"
-                defaultMessage="Introduce"
-              />
-            }
-          >
+          <Tooltip title="指标说明">
             <InfoCircleOutlined />
           </Tooltip>
-        }
-        // total={numeral(6560).format('0,0')}
-        footer={
-          <Field
-            label={
-              <FormattedMessage
-                id="dashboardandanalysis.analysis.conversion-rate"
-                defaultMessage="Conversion Rate"
-              />
-            }
-            value="60%"
-          />
-        }
+        } // total={numeral(6560).format('0,0')}
+        footer={<Field label="转化率" value="60%" />}
         contentHeight={46}
       >
         {/* <MiniBar data={visitData} /> */}
@@ -118,39 +85,31 @@ const IntroduceRow = ({ loading, visitData }: { loading: boolean; visitData: Blo
       <ChartCard
         loading={loading}
         bordered={false}
-        title={
-          <FormattedMessage
-            id="dashboardandanalysis.analysis.operational-effect"
-            defaultMessage="Operational Effect"
-          />
-        }
+        title="运营活动效果"
         action={
-          <Tooltip
-            title={
-              <FormattedMessage
-                id="dashboardandanalysis.analysis.introduce"
-                defaultMessage="Introduce"
-              />
-            }
-          >
+          <Tooltip title="指标说明">
             <InfoCircleOutlined />
           </Tooltip>
         }
         total="78%"
         footer={
-          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
-            <Trend flag="up" style={{ marginRight: 16 }}>
-              <FormattedMessage
-                id="dashboardandanalysis.analysis.week"
-                defaultMessage="Weekly Changes"
-              />
+          <div
+            style={{
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+            }}
+          >
+            <Trend
+              flag="up"
+              style={{
+                marginRight: 16,
+              }}
+            >
+              周同比
               <span className={styles.trendText}>12%</span>
             </Trend>
             <Trend flag="down">
-              <FormattedMessage
-                id="dashboardandanalysis.analysis.day"
-                defaultMessage="Weekly Changes"
-              />
+              日同比
               <span className={styles.trendText}>11%</span>
             </Trend>
           </div>

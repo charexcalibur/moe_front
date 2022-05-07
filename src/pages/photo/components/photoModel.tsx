@@ -3,10 +3,10 @@
  * @Author: hayato
  * @Date: 2022-02-16 22:41:51
  * @LastEditors: hayato
- * @LastEditTime: 2022-05-07 18:57:24
+ * @LastEditTime: 2022-05-07 22:32:09
  */
 import React, { FC, useState, useEffect } from 'react'
-import { Modal, Form, Button, Input, Result, Upload, message, Select, Card } from 'antd'
+import { Modal, Form, Input, Upload, message, Select, Card } from 'antd'
 import { Dispatch } from 'redux'
 import { connect } from 'dva'
 import styles from '../style.less'
@@ -38,7 +38,7 @@ interface PhotoModelProps {
 
 const PhotoModel: FC<PhotoModelProps> = props => {
   const [form] = Form.useForm();
-  console.log('props: ', props)
+  console.log('PhotoModel props: ', props)
   const {
     done,
     type,
@@ -81,6 +81,7 @@ const PhotoModel: FC<PhotoModelProps> = props => {
         ...current
       })
     }
+    console.log(form.getFieldValue('name'))
   }, [props.current])
 
   useEffect(() => {
@@ -141,8 +142,6 @@ const PhotoModel: FC<PhotoModelProps> = props => {
     file: any,
     fileList: any
   }) => {
-    console.log('file: ', file)
-    console.log('fileList: ', fileList)
     if (file.status === 'uploading') {
       setLoading(true)
       return;
@@ -300,8 +299,7 @@ const PhotoModel: FC<PhotoModelProps> = props => {
   }
 
   const getModalContent = () => {
-
-
+    console.log('getModalContent: ', form)
     return (
       <div className={styles.photoModelContent}>
         { type == 0 ? <></> : <div className={styles.modelImage}>{getImageList()}</div>}
@@ -316,55 +314,55 @@ const PhotoModel: FC<PhotoModelProps> = props => {
               name='name'
               label='照片名'
             >
-              <Input placeholder="请输入" />
+              <Input defaultValue={current?.name} placeholder="请输入" />
             </Form.Item>
             <Form.Item
               name='des'
               label='描述'
             >
-              <Input placeholder="请输入" />
+              <Input defaultValue={current?.des} placeholder="请输入" />
             </Form.Item>
             <Form.Item
               name='location'
               label='拍摄地'
             >
-              <Input placeholder="请输入" />
+              <Input defaultValue={current?.location} placeholder="请输入" />
             </Form.Item>
             <Form.Item
               name='shooting_date'
               label='拍摄日期'
             >
-              <Input placeholder="请输入" />
+              <Input defaultValue={current?.shooting_date} placeholder="请输入" />
             </Form.Item>
             <Form.Item
               name='aperture'
               label='光圈'
             >
-              <Input placeholder="请输入" />
+              <Input defaultValue={current?.aperture} placeholder="请输入" />
             </Form.Item>
             <Form.Item
               name='focal_length'
               label='焦段'
             >
-              <Input placeholder="请输入" />
+              <Input defaultValue={current?.focal_length} placeholder="请输入" />
             </Form.Item>
             <Form.Item
               name='shutter'
               label='快门'
             >
-              <Input placeholder="请输入" />
+              <Input defaultValue={current?.shutter} placeholder="请输入" />
             </Form.Item>
             <Form.Item
               name='iso'
               label='iso'
             >
-              <Input placeholder="请输入" />
+              <Input defaultValue={current?.iso} placeholder="请输入" />
             </Form.Item>
             <Form.Item
               name='rate'
               label='rate'
             >
-              <Input placeholder="请输入" />
+              <Input defaultValue={current?.rate} placeholder="请输入" />
             </Form.Item>
             <Form.Item
               label='标签'

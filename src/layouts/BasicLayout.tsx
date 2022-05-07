@@ -5,6 +5,7 @@
  * @LastEditors: hayato
  * @LastEditTime: 2021-01-14 22:53:34
  */
+
 /**
  * Ant Design Pro v4 use `@ant-design/pro-layout` to handle Layout.
  * You can view component api by:
@@ -17,12 +18,17 @@ import ProLayout, {
   DefaultFooter,
   SettingDrawer,
 } from '@ant-design/pro-layout';
-import { formatMessage } from 'umi-plugin-react/locale';
 import React, { useEffect } from 'react';
 import { Link, router } from 'umi';
 import { Dispatch } from 'redux';
 import { connect } from 'dva';
-import { GithubOutlined, DashboardFilled, TableOutlined, FundOutlined, UnorderedListOutlined} from '@ant-design/icons';
+import {
+  GithubOutlined,
+  DashboardFilled,
+  TableOutlined,
+  FundOutlined,
+  UnorderedListOutlined,
+} from '@ant-design/icons';
 import { Result, Button } from 'antd';
 import Authorized from '@/utils/Authorized';
 import RightContent from '@/components/GlobalHeader/RightContent';
@@ -30,13 +36,10 @@ import { ConnectState } from '@/models/connect';
 import { isAntDesignPro, getAuthorityFromRouter } from '@/utils/utils';
 import logo from '../assets/logo.svg';
 import { any } from 'prop-types';
-
-
 const iconsEnum = {
   table: <TableOutlined />,
-  dashboard: <FundOutlined />
-}
-
+  dashboard: <FundOutlined />,
+};
 const noMatch = (
   <Result
     status={403}
@@ -49,7 +52,6 @@ const noMatch = (
     }
   />
 );
-
 export interface BasicLayoutProps extends ProLayoutProps {
   breadcrumbNameMap: {
     [path: string]: MenuDataItem;
@@ -60,7 +62,6 @@ export interface BasicLayoutProps extends ProLayoutProps {
   settings: Settings;
   dispatch: Dispatch;
 }
-
 export type BasicLayoutContext = { [K in 'location']: BasicLayoutProps[K] } & {
   breadcrumbNameMap: {
     [path: string]: MenuDataItem;
@@ -88,7 +89,7 @@ const footerRender: BasicLayoutProps['footerRender'] = () => {
   );
 };
 
-const BasicLayout: React.FC<BasicLayoutProps> = props => {
+const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
   const {
     dispatch,
     children,
@@ -99,7 +100,6 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
       pathname: '/',
     },
   } = props;
-
   useEffect(() => {
     if (dispatch) {
       dispatch({
@@ -125,7 +125,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
   };
 
   const mappingIcon = (menuData: MenuDataItem[]): MenuDataItem[] => {
-    const mappingMenu = menuData.map(item => ({
+    const mappingMenu = menuData.map((item) => ({
       ...item,
       icon: iconsEnum[item.icon],
       children: item.children ? mappingIcon(item.children) : [],
@@ -133,29 +133,29 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
     return mappingMenu;
   };
 
-  const _menuData = menuData !== undefined ? mappingIcon(menuData) : []
+  const _menuData = menuData !== undefined ? mappingIcon(menuData) : [];
 
   const checkMenuAccess = (menuItem: MenuDataItem): any => {
-    if(menuItem.children) {
+    if (menuItem.children) {
       menuItem.children.forEach((item) => {
-        return checkMenuAccess(item)
-      })
+        return checkMenuAccess(item);
+      });
     } else {
-      return menuItem.path === window.location.pathname
+      return menuItem.path === window.location.pathname;
     }
-  }
+  };
 
-
-  if(!loading && loading !== undefined && menuData !== undefined) {
+  if (!loading && loading !== undefined && menuData !== undefined) {
     const pathAccess = menuData.find((item) => {
-      if(window.location.pathname === '/404') {
-        return true
+      if (window.location.pathname === '/404') {
+        return true;
       }
-      return checkMenuAccess(item)
-    })
 
-    if(!pathAccess && pathAccess !== undefined) {
-      router.push('/404')
+      return checkMenuAccess(item);
+    });
+
+    if (!pathAccess && pathAccess !== undefined) {
+      router.push('/404');
     }
   }
 
@@ -163,7 +163,6 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
     <>
       <ProLayout
         logo={logo}
-        formatMessage={formatMessage}
         menuHeaderRender={(logoDom, titleDom) => (
           <Link to="/">
             {logoDom}

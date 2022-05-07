@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-13 17:25:03
  * @LastEditors: hayato
- * @LastEditTime: 2022-05-04 23:02:57
+ * @LastEditTime: 2022-05-07 22:38:07
  */
 
 import React, { FC, useRef, useState, useEffect } from 'react';
@@ -41,6 +41,8 @@ export const Photo: FC<PhotoListProps> = (props) => {
   const [isUploadModelVisible, setIsUploadModelVisible] = useState(false)
   const [imageType, setImageType] = useState<number>(0) // 1 for origin, 2 for 4k, 3 for thumbnail
   const [imageSizesCurrent, setImageSizesCurrent] = useState<any>({})
+  const [shouldPatchInfo, setShouldPatchInfo] = useState<boolean>(false)
+
   useEffect(() => {
     dispatch({
       type: 'photoList/fetch',
@@ -68,7 +70,7 @@ export const Photo: FC<PhotoListProps> = (props) => {
     setCurrent(record)
     setModelType(1)
     setIsModalVisible(true)
-    console.log(record)
+    console.log('_showPhoto: ', record)
   }
 
   const _showUpload = async (record: PhotoListItemType, type: number) => {
@@ -77,6 +79,12 @@ export const Photo: FC<PhotoListProps> = (props) => {
       type
     })
     console.log('res: ', res)
+    console.log('_showUpload: ', record)
+    if (record.aperture === '') {
+      setShouldPatchInfo(true)
+    } else {
+      setShouldPatchInfo(false)
+    }
     setImageSizesCurrent(res)
     setImageType(type)
     setIsUploadModelVisible(true)
@@ -193,6 +201,16 @@ export const Photo: FC<PhotoListProps> = (props) => {
       key: 'des'
     },
     {
+      title: 'location',
+      dataIndex: 'location',
+      key: 'location'
+    },
+    {
+      title: 'shooting_date',
+      dataIndex: 'shooting_date',
+      key: 'shooting_date'
+    },
+    {
       title: 'action',
       render: (text: any, record: PhotoListItemType, index: number) => {
         return ([
@@ -297,6 +315,7 @@ export const Photo: FC<PhotoListProps> = (props) => {
         onCancel={handleUploadCancel}
         current={imageSizesCurrent}
         imageType={imageType}
+        shouldPatchInfo={shouldPatchInfo}
       ></UploadModel>
     </Layout>
   )

@@ -2,20 +2,18 @@ import { DefaultFooter, MenuDataItem, getMenuData, getPageTitle } from '@ant-des
 import { Helmet } from 'react-helmet';
 import { Link } from 'umi';
 import React from 'react';
-import { formatMessage } from 'umi-plugin-react/locale';
 import { connect } from 'dva';
 import SelectLang from '@/components/SelectLang';
 import { ConnectProps, ConnectState } from '@/models/connect';
 import logo from '../assets/logo.svg';
 import styles from './UserLayout.less';
-
 export interface UserLayoutProps extends ConnectProps {
   breadcrumbNameMap: {
     [path: string]: MenuDataItem;
   };
 }
 
-const UserLayout: React.FC<UserLayoutProps> = props => {
+const UserLayout: React.FC<UserLayoutProps> = (props) => {
   const {
     route = {
       routes: [],
@@ -31,7 +29,6 @@ const UserLayout: React.FC<UserLayoutProps> = props => {
   const { breadcrumb } = getMenuData(routes);
   const title = getPageTitle({
     pathname: location.pathname,
-    formatMessage,
     breadcrumb,
     ...props,
   });

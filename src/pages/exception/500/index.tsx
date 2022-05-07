@@ -1,8 +1,6 @@
 import Link from 'umi/link';
 import { Result, Button } from 'antd';
 import React from 'react';
-import { formatMessage } from 'umi-plugin-react/locale';
-
 export default () => (
   <Result
     status="500"
@@ -10,15 +8,10 @@ export default () => (
     style={{
       background: 'none',
     }}
-    subTitle={formatMessage({
-      id: 'exceptionand500.description.500',
-      defaultMessage: 'Sorry, the server is reporting an error.',
-    })}
+    subTitle="抱歉，服务器出错了。"
     extra={
       <Link to="/">
-        <Button type="primary">
-          {formatMessage({ id: 'exceptionand500.exception.back', defaultMessage: 'Back Home' })}
-        </Button>
+        <Button type="primary">返回首页</Button>
       </Link>
     }
   />

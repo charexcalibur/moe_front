@@ -1,8 +1,6 @@
 import { Card, Col, Row, Tabs } from 'antd';
-import { FormattedMessage, formatMessage } from 'umi-plugin-react/locale';
 import React from 'react';
 import { OfflineChartData, OfflineDataType } from '../data.d';
-
 import { TimelineChart, Pie } from './Charts';
 import NumberInfo from './NumberInfo';
 import styles from '../style.less';
@@ -14,22 +12,29 @@ const CustomTab = ({
   data: OfflineDataType;
   currentTabKey: string;
 }) => (
-  <Row gutter={8} style={{ width: 138, margin: '8px 0' }} type="flex">
+  <Row
+    gutter={8}
+    style={{
+      width: 138,
+      margin: '8px 0',
+    }}
+    type="flex"
+  >
     <Col span={12}>
       <NumberInfo
         title={data.name}
-        subTitle={
-          <FormattedMessage
-            id="dashboardandanalysis.analysis.conversion-rate"
-            defaultMessage="Conversion Rate"
-          />
-        }
+        subTitle="转化率"
         gap={2}
         total={`${data.cvr * 100}%`}
         theme={currentKey !== data.name ? 'light' : undefined}
       />
     </Col>
-    <Col span={12} style={{ paddingTop: 36 }}>
+    <Col
+      span={12}
+      style={{
+        paddingTop: 36,
+      }}
+    >
       <Pie
         animate={false}
         inner={0.55}
@@ -57,17 +62,28 @@ const OfflineData = ({
   offlineChartData: OfflineChartData[];
   handleTabChange: (activeKey: string) => void;
 }) => (
-  <Card loading={loading} className={styles.offlineCard} bordered={false} style={{ marginTop: 32 }}>
+  <Card
+    loading={loading}
+    className={styles.offlineCard}
+    bordered={false}
+    style={{
+      marginTop: 32,
+    }}
+  >
     <Tabs activeKey={activeKey} onChange={handleTabChange}>
-      {offlineData.map(shop => (
+      {offlineData.map((shop) => (
         <TabPane tab={<CustomTab data={shop} currentTabKey={activeKey} />} key={shop.name}>
-          <div style={{ padding: '0 24px' }}>
+          <div
+            style={{
+              padding: '0 24px',
+            }}
+          >
             <TimelineChart
               height={400}
               data={offlineChartData}
               titleMap={{
-                y1: formatMessage({ id: 'dashboardandanalysis.analysis.traffic' }),
-                y2: formatMessage({ id: 'dashboardandanalysis.analysis.payments' }),
+                y1: '客流量',
+                y2: '支付笔数',
               }}
             />
           </div>
