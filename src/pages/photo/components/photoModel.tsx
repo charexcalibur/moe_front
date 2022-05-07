@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-16 22:41:51
  * @LastEditors: hayato
- * @LastEditTime: 2022-05-04 23:07:13
+ * @LastEditTime: 2022-05-07 18:57:24
  */
 import React, { FC, useState, useEffect } from 'react'
 import { Modal, Form, Button, Input, Result, Upload, message, Select, Card } from 'antd'
@@ -130,12 +130,12 @@ const PhotoModel: FC<PhotoModelProps> = props => {
 
   const modalFooter = { okText: '保存', onOk: handleSubmit, onCancel }
 
-  // const uploadButton = (
-  //   <div>
-  //     {loading ? <LoadingOutlined /> : <PlusOutlined />}
-  //     <div style={{ marginTop: 8 }}>Upload</div>
-  //   </div>
-  // );
+  const uploadButton = (
+    <div>
+      {loading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </div>
+  );
 
   const handleChange = ({ file, fileList }: {
     file: any,
@@ -304,7 +304,7 @@ const PhotoModel: FC<PhotoModelProps> = props => {
 
     return (
       <div className={styles.photoModelContent}>
-        {/* { type == 0 ? <></> : <div className={styles.modelImage}>{getImageList()}</div>} */}
+        { type == 0 ? <></> : <div className={styles.modelImage}>{getImageList()}</div>}
         <div className={styles.modelFormContainer}>
           <Form
             form={form}
