@@ -354,7 +354,14 @@ export default {
               icon: 'dashboard',
               authority: ['admin'],
               component: './photo',
-            },            
+            },
+            {
+              path: '/comment',
+              name: 'comment',
+              icon: 'dashboard',
+              authority: ['admin'],
+              component: './comment',
+            },
             {
               path: '/',
               redirect: '/dashboard/analysis',

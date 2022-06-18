@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-04-30 18:00:40
  * @LastEditors: hayato
- * @LastEditTime: 2022-05-07 22:52:23
+ * @LastEditTime: 2022-06-18 22:32:48
  */
 /*
  * @Description: Description
@@ -24,6 +24,7 @@ import { patchImageSizes, patchPhotoInfo } from '@/pages/photo/service'
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
 import { deleteImageSizes } from '@/pages/photo/service'
 import Exif from 'exif-js'
+import rgbaster from 'rgbaster'
 
 const QINIU_SERVER = prefixUrl.QINIU_SERVER
 const CDN_URL = prefixUrl.CDN_URL
@@ -58,7 +59,6 @@ const UploadModel: FC<PhotoModelProps> = props => {
   const [imageUrl, setImageUrl] = useState<string>('')
   const [imageName, setImageName] = useState<string>('')
   const [photoInfo, setPhotoInfo] = useState<any>({})
-  // const [fileList, setFileList] = useState<any[]>([])
 
   useEffect(() => {
     if (form && !visible) {
@@ -114,7 +114,7 @@ const UploadModel: FC<PhotoModelProps> = props => {
     </div>
   );
 
-  const handleChange = ({ file, fileList }: {
+  const handleChange = async ({ file, fileList }: {
     file: any,
     fileList: any
   }) => {
@@ -135,8 +135,14 @@ const UploadModel: FC<PhotoModelProps> = props => {
         status,
         url: (CDN_URL + response.key || "")
       };
+      // 获取主色值
+      const colorRes = await rgbaster(fileItem.url, {
+        exclude: [ 'rgb(255,255,255)' , 'rgb(0,0,0)']
+      })
+
       form.setFieldsValue({
-        cdn_url: fileItem.url
+        cdn_url: fileItem.url,
+        color_range: JSON.stringify(colorRes.slice(0, 11))
       })
       console.log('fileItem: ', fileItem)
       fileList.pop();
@@ -251,9 +257,8 @@ const UploadModel: FC<PhotoModelProps> = props => {
       });
     });
 
+
     Exif.getData(file, function() {
-      console.log('exif get data: ', this)
-      console.log('getAllTags', Exif.getAllTags(this))
       const dateList = Exif.getTag(this, 'DateTimeOriginal').split(' ')[0].split(':')
 
       const imageInfo = {
@@ -280,7 +285,6 @@ const UploadModel: FC<PhotoModelProps> = props => {
   }
 
   const handlePreview = (file: any) => {
-    console.log('handle preview: ', file)
     setPreviewVisible(true)
     setPreviewImage(file.url)
   }
@@ -331,6 +335,12 @@ const UploadModel: FC<PhotoModelProps> = props => {
             <Form.Item
               name='cdn_url'
               label='照片地址'
+            >
+              <Input placeholder="请输入" />
+            </Form.Item>
+            <Form.Item
+              name='color_range'
+              label='色值区间'
             >
               <Input placeholder="请输入" />
             </Form.Item>
