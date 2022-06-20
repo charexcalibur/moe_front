@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-04-30 18:00:40
  * @LastEditors: hayato
- * @LastEditTime: 2022-06-18 22:32:48
+ * @LastEditTime: 2022-06-20 23:22:51
  */
 /*
  * @Description: Description
@@ -41,7 +41,7 @@ interface PhotoModelProps {
 
 const UploadModel: FC<PhotoModelProps> = props => {
   const [form] = Form.useForm();
-  console.log('props: ', props)
+  console.log('UploadModel props: ', props)
   const {
     done,
     destroyOnClose,
@@ -69,11 +69,28 @@ const UploadModel: FC<PhotoModelProps> = props => {
 
   useEffect(() => {
     console.log('current: ', current)
-    if (current) {
-      form.setFieldsValue({
-        ...current
+    async function getImageColor(url:string) {
+      return await rgbaster(url, {
+        exclude: [ 'rgb(255,255,255)' , 'rgb(0,0,0)']
       })
     }
+    if (!current?.color_range && current.cdn_url) {
+      const colorRes = getImageColor(current.cdn_url)
+      colorRes.then(res => {
+        current.color_range = JSON.stringify(res.slice(0, 11))
+        form.setFieldsValue({
+          ...current
+        })
+      })
+
+    } else {
+      setTimeout(() => {
+        form.setFieldsValue({
+          ...current
+        })
+      })
+    }
+
   }, [props.current])
 
 
@@ -93,8 +110,6 @@ const UploadModel: FC<PhotoModelProps> = props => {
     value.id = current.id
     await patchImageSizes(value)
     message.success('操作成功')
-    console.log('photoInfo: ', photoInfo)
-    console.log('shouldPatchInfo: ', shouldPatchInfo)
     if (shouldPatchInfo) {
       const infoParams = {id: current.image, ...photoInfo}
       await patchPhotoInfo(infoParams)
@@ -118,8 +133,6 @@ const UploadModel: FC<PhotoModelProps> = props => {
     file: any,
     fileList: any
   }) => {
-    console.log('file: ', file)
-    console.log('fileList: ', fileList)
     if (file.status === 'uploading') {
       setLoading(true)
       return;

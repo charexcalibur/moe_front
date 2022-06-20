@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-13 17:27:13
  * @LastEditors: hayato
- * @LastEditTime: 2022-05-04 17:49:23
+ * @LastEditTime: 2022-06-20 22:20:31
  */
 import { AnyAction, Reducer } from 'redux'
 import { EffectsCommandMap } from 'dva'
@@ -27,6 +27,7 @@ export interface ImageSizesType {
   cdn_url: string;
   type: number;
   id: number;
+  color_range: any[];
 }
 
 export interface EquipmentsType {

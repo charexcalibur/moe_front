@@ -3,7 +3,7 @@
  * @Author: hayato
  * @Date: 2022-02-13 17:25:03
  * @LastEditors: hayato
- * @LastEditTime: 2022-05-07 22:38:07
+ * @LastEditTime: 2022-06-20 22:07:39
  */
 
 import React, { FC, useRef, useState, useEffect } from 'react';
@@ -78,14 +78,21 @@ export const Photo: FC<PhotoListProps> = (props) => {
       image: record.id,
       type
     })
-    console.log('res: ', res)
-    console.log('_showUpload: ', record)
     if (record.aperture === '') {
       setShouldPatchInfo(true)
     } else {
       setShouldPatchInfo(false)
     }
     setImageSizesCurrent(res)
+    setImageType(type)
+    setIsUploadModelVisible(true)
+  }
+
+  const editPhoto = (record: PhotoListItemType, type: number) => {
+    console.log('editPhoto: ', record, type)
+    const current = record.image_sizes.filter(item => item.type === type)
+    console.log('edit photo current: ', current)
+    setImageSizesCurrent(current[0])
     setImageType(type)
     setIsUploadModelVisible(true)
   }
@@ -218,23 +225,31 @@ export const Photo: FC<PhotoListProps> = (props) => {
             <Button onClick={() => _showPhoto(record)} type="link">编辑</Button>
           </Space>,
           <Space size="middle">
-          <Button
-            disabled={record.image_sizes?.length === 2 || record.image_sizes.filter(item => item.type === 2).length === 1}
-            onClick={() => _showUpload(record, 2)}
-            type="link"
-          >上传 4k</Button>
-          <Button
-            disabled={record.image_sizes?.length === 2 || record.image_sizes.filter(item => item.type === 3).length === 1}
-            onClick={() => _showUpload(record, 3)} type="link">上传 thumbnail</Button>
-          <Button
-            type="link"
-            onClick={() => handleImageShown(record.id, record.is_shown)}
-          >{ record.is_shown === '1' ? '下线' : '上线' }</Button>
-          <Button
-            type="link"
-            onClick={() => handleDelete(record.id)}
-          >删除</Button>
-        </Space>
+            {
+              (record.image_sizes?.length === 2 || record.image_sizes.filter(item => item.type === 2).length === 1)
+              ? <Button
+                  onClick={() => editPhoto(record, 2)}
+                  type="link"
+                >编辑 4k</Button>
+              : <Button
+                  disabled={record.image_sizes?.length === 2 || record.image_sizes.filter(item => item.type === 2).length === 1}
+                  onClick={() => _showUpload(record, 2)}
+                  type="link"
+                >上传 4k</Button>
+            }
+
+            <Button
+              disabled={record.image_sizes?.length === 2 || record.image_sizes.filter(item => item.type === 3).length === 1}
+              onClick={() => _showUpload(record, 3)} type="link">上传 thumbnail</Button>
+            <Button
+              type="link"
+              onClick={() => handleImageShown(record.id, record.is_shown)}
+            >{ record.is_shown === '1' ? '下线' : '上线' }</Button>
+            <Button
+              type="link"
+              onClick={() => handleDelete(record.id)}
+            >删除</Button>
+          </Space>
         ])
       }
     }
