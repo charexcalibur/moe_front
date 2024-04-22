@@ -177,13 +177,13 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
 
           return <Link to={menuItemProps.path}>{defaultDom}</Link>;
         }}
-        breadcrumbRender={(routers = []) => [
-          {
-            path: '/',
-            breadcrumbName: '首页',
-          },
-          ...routers,
-        ]}
+        // breadcrumbRender={(routers = []) => [
+        //   {
+        //     path: '/',
+        //     breadcrumbName: '首页',
+        //   },
+        //   ...routers,
+        // ]}
         itemRender={(route, params, routes, paths) => {
           const first = routes.indexOf(route) === 0;
           return first ? (
